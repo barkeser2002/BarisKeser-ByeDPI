@@ -2,4 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Brand palette (from the app logo) -->
+    <color name="brand_navy">#07081A</color>
+    <color name="brand_blue">#5976DF</color>
+    <color name="brand_blue_dark">#3C52A3</color>
+    <color name="accent_orange">#FF6A4D</color>
+
+    <!-- Main-screen state colors -->
+    <color name="connect_button">#5976DF</color>
+    <color name="disconnect_button">#E5484D</color>
+    <color name="dot_idle">#8A8F98</color>
+    <color name="dot_active">#34C759</color>
 </resources>

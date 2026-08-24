@@ -2,6 +2,7 @@ package io.github.dovecoteescapee.byedpi.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -250,6 +251,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 binding.statusButton.isEnabled = true
+                setStateColors(R.color.connect_button, R.color.dot_idle)
             }
 
             AppStatus.Running -> {
@@ -265,7 +267,15 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 binding.statusButton.isEnabled = true
+                setStateColors(R.color.disconnect_button, R.color.dot_active)
             }
         }
+    }
+
+    private fun setStateColors(buttonColor: Int, dotColor: Int) {
+        binding.statusButton.backgroundTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(this, buttonColor))
+        binding.statusDot.backgroundTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(this, dotColor))
     }
 }
