@@ -1,0 +1,9 @@
+<resources>
+    <!-- On Android 15 (API 35), apps targeting SDK 35 get edge-to-edge enforced.
+         Opt out to preserve the existing (inset-unaware) layout until the UI is
+         adapted for insets. This flag is honored through targetSdk 35 and is
+         removed in SDK 36. -->
+    <style name="Theme.ByeDPI" parent="Theme.ByeDPI.Base">
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
+</resources>

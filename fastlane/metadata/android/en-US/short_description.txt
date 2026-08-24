@@ -1,1 +1,1 @@
-Bypass censorship on Android
+Bypass DPI and censorship with a local, on-device proxy. No remote server.

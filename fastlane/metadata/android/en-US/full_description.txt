@@ -1,1 +1,16 @@
-<p><i>ByeDPI</i> runs a local VPN service to bypass DPI (Deep Packet Inspection) and censorship. It runs a SOCKS5 proxy <a href='https://github.com/hufrea/byedpi' target='_blank' rel='nofollow noopener'>ByeDPI</a> and redirects all traffic through it.</p><p>To bypass some blocks, you may need to change the settings. More about the various settings can be found in the <a href='https://github.com/hufrea/byedpi/blob/main/README.md' target='_blank' rel='nofollow noopener'>ByeDPI documentation</a>.</p><p>The application uses the VPN mode on Android to redirect traffic, but does not send anything to a remote server. It does not encrypt traffic and does not hide your IP address.</p>
+BarisKeser-ByeDPI bypasses Deep Packet Inspection (DPI) and censorship without a remote server.
+
+It runs the open-source ByeDPI engine as a local SOCKS5 proxy on your device and, in VPN mode, routes your traffic through it using Android's on-device VPN. Nothing is sent to a remote VPN server, your traffic is not proxied off-device, and your IP address is not hidden or changed — the app only alters how the first packets of a connection are sent so DPI systems cannot easily block them.
+
+Features:
+• VPN mode (system-wide) or local SOCKS5 proxy mode
+• Ready-made presets for Turkish ISPs (Türk Telekom, Turkcell Superonline, Kablonet, Vodafone) plus a general profile
+• Advanced command-line editor for custom ByeDPI strategies (split, disorder, fake, TTL, TLS record split, and more)
+• Configurable DNS and IPv6 in VPN mode
+• Quick Settings tile to toggle on/off
+• No accounts, no ads, no analytics, no tracking
+
+Privacy:
+The app collects no personal data. All processing happens on your device. See the privacy policy for details.
+
+BarisKeser-ByeDPI is free and open source. Engine: https://github.com/hufrea/byedpi

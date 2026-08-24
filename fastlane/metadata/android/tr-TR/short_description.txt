@@ -1,0 +1,1 @@
+DPI ve sansürü cihazında çalışan yerel proxy ile aş. Uzak sunucu yok.

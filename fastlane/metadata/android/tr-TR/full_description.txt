@@ -1,0 +1,16 @@
+BarisKeser-ByeDPI, uzak bir sunucuya ihtiyaç duymadan Derin Paket İncelemesini (DPI) ve sansürü aşar.
+
+Açık kaynaklı ByeDPI motorunu cihazında yerel bir SOCKS5 proxy olarak çalıştırır ve VPN modunda trafiğini Android'in cihaz-içi VPN'i üzerinden bu proxy'ye yönlendirir. Hiçbir veri uzak bir VPN sunucusuna gönderilmez, trafiğin cihaz dışında proxy'lenmez ve IP adresin gizlenmez veya değiştirilmez — uygulama yalnızca bağlantının ilk paketlerinin gönderilme biçimini değiştirir; böylece DPI sistemleri engelleyemez.
+
+Özellikler:
+• VPN modu (sistem geneli) veya yerel SOCKS5 proxy modu
+• Türkiye operatörleri için hazır presetler (Türk Telekom, Turkcell Superonline, Kablonet, Vodafone) ve genel profil
+• Özel ByeDPI stratejileri için gelişmiş komut satırı düzenleyici (split, disorder, fake, TTL, TLS record split ve daha fazlası)
+• VPN modunda yapılandırılabilir DNS ve IPv6
+• Hızlı Ayarlar kutucuğu ile aç/kapa
+• Hesap yok, reklam yok, analitik yok, takip yok
+
+Gizlilik:
+Uygulama hiçbir kişisel veri toplamaz. Tüm işlemler cihazında yapılır. Ayrıntılar için gizlilik politikasına bakın.
+
+BarisKeser-ByeDPI ücretsiz ve açık kaynaktır. Motor: https://github.com/hufrea/byedpi

@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "io.github.dovecoteescapee.byedpi"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "io.github.dovecoteescapee.byedpi"
+        applicationId = "com.bariskeser.byedpi"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 11
         versionName = "2.0.0"
 

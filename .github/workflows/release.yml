@@ -41,19 +41,22 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build release APK
+      - name: Build release APK (sideload) + AAB (Google Play)
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleRelease --stacktrace
+        run: ./gradlew assembleRelease bundleRelease --stacktrace
 
-      - name: Locate built APK
-        id: apk
+      - name: Locate build outputs
+        id: out
         run: |
-          FILE=$(find app/build/outputs/apk/release -name "*.apk" | head -n1)
-          echo "path=$FILE" >> "$GITHUB_OUTPUT"
-          echo "Found APK: $FILE"
+          APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n1)
+          AAB=$(find app/build/outputs/bundle/release -name "*.aab" | head -n1)
+          echo "apk=$APK" >> "$GITHUB_OUTPUT"
+          echo "aab=$AAB" >> "$GITHUB_OUTPUT"
+          echo "APK: $APK"
+          echo "AAB: $AAB"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -61,11 +64,19 @@ jobs:
           name: byedpi-release-apk
           path: app/build/outputs/apk/release/*.apk
 
+      - name: Upload AAB artifact (Play)
+        uses: actions/upload-artifact@v4
+        with:
+          name: byedpi-release-aab
+          path: app/build/outputs/bundle/release/*.aab
+
       - name: Create GitHub Release (on tag)
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" "${{ steps.apk.outputs.path }}" \
+          gh release create "${GITHUB_REF_NAME}" \
+            "${{ steps.out.outputs.apk }}" \
+            "${{ steps.out.outputs.aab }}" \
             --title "BarisKeser-ByeDPI ${GITHUB_REF_NAME}" \
             --generate-notes
