@@ -5,6 +5,8 @@ import io.github.dovecoteescapee.byedpi.utility.getStringNotNull
 import io.github.dovecoteescapee.byedpi.utility.shellSplit
 
 sealed interface ByeDpiProxyPreferences {
+    val args: Array<String>
+
     companion object {
         fun fromSharedPreferences(preferences: SharedPreferences): ByeDpiProxyPreferences =
             when (preferences.getBoolean("byedpi_enable_cmd_settings", false)) {
@@ -14,22 +16,29 @@ sealed interface ByeDpiProxyPreferences {
     }
 }
 
-class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreferences {
-    constructor(cmd: String) : this(cmdToArgs(cmd))
+class ByeDpiProxyCmdPreferences(
+    cmd: String,
+    ip: String = "127.0.0.1",
+    port: String = "1080",
+) : ByeDpiProxyPreferences {
 
     constructor(preferences: SharedPreferences) : this(
-        preferences.getStringNotNull(
-            "byedpi_cmd_args",
-            ""
-        )
+        cmd = preferences.getStringNotNull("byedpi_cmd_args", ""),
+        ip = preferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1"),
+        port = preferences.getStringNotNull("byedpi_proxy_port", "1080"),
     )
 
-    companion object {
-        private fun cmdToArgs(cmd: String): Array<String> {
-            val firstArgIndex = cmd.indexOf("-")
-            val argsStr = (if (firstArgIndex > 0) cmd.substring(firstArgIndex) else cmd).trim()
-            return arrayOf("ciadpi") + shellSplit(argsStr)
+    override val args: Array<String> = run {
+        val firstArgIndex = cmd.indexOf("-")
+        val body = (if (firstArgIndex > 0) cmd.substring(firstArgIndex) else cmd).trim()
+        val hasIp = Regex("(^|\\s)(-i|--ip)(\\s|=|\\S)").containsMatchIn(body)
+        val hasPort = Regex("(^|\\s)(-p|--port)(\\s|=|\\S)").containsMatchIn(body)
+        val prefix = buildString {
+            if (!hasIp) append("--ip $ip ")
+            if (!hasPort) append("--port $port ")
         }
+        val blacklist = setOf("--help", "--version", "-h", "-v")
+        arrayOf("ciadpi") + shellSplit("$prefix$body").filter { it !in blacklist }
     }
 }
 
@@ -133,6 +142,85 @@ class ByeDpiProxyUIPreferences(
         dropSack = preferences.getBoolean("byedpi_drop_sack", false),
         byedpiFakeOffset = preferences.getString("byedpi_fake_offset", null)?.toIntOrNull(),
     )
+
+    override val args: Array<String>
+        get() {
+            val a = mutableListOf("ciadpi")
+            a.add("-i$ip")
+            a.add("-p$port")
+            a.add("-c$maxConnections")
+            a.add("-b$bufferSize")
+
+            val protocols = buildList {
+                if (desyncHttps) add("t")
+                if (desyncHttp) add("h")
+            }
+            val hostsStr = hosts
+            if (!hostsStr.isNullOrBlank()) {
+                val hostArg = ":${hostsStr.replace("\n", " ")}"
+                when (hostsMode) {
+                    HostsMode.Blacklist -> {
+                        a.add("-H$hostArg")
+                        a.add("-An")
+                        if (protocols.isNotEmpty()) a.add("-K${protocols.joinToString(",")}")
+                    }
+                    HostsMode.Whitelist -> {
+                        if (protocols.isNotEmpty()) a.add("-K${protocols.joinToString(",")}")
+                        a.add("-H$hostArg")
+                    }
+                    HostsMode.Disable -> {}
+                }
+            } else if (protocols.isNotEmpty()) {
+                a.add("-K${protocols.joinToString(",")}")
+            }
+
+            if (customTtl && defaultTtl != 0) a.add("-g$defaultTtl")
+            if (noDomain) a.add("-N")
+
+            if (splitPosition != 0 && desyncMethod != DesyncMethod.None) {
+                val pos = splitPosition.toString() + if (splitAtHost) "+h" else ""
+                val opt = when (desyncMethod) {
+                    DesyncMethod.Split -> "-s"
+                    DesyncMethod.Disorder -> "-d"
+                    DesyncMethod.OOB -> "-o"
+                    DesyncMethod.DISOOB -> "-q"
+                    DesyncMethod.Fake -> "-f"
+                    DesyncMethod.None -> ""
+                }
+                if (opt.isNotEmpty()) a.add("$opt$pos")
+            }
+
+            if (desyncMethod == DesyncMethod.Fake) {
+                if (fakeTtl != 0) a.add("-t$fakeTtl")
+                if (fakeSni.isNotEmpty()) a.add("-n$fakeSni")
+                if (fakeOffset != 0) a.add("-O$fakeOffset")
+            }
+            if (desyncMethod == DesyncMethod.OOB || desyncMethod == DesyncMethod.DISOOB) {
+                a.add("-e${Char(oobChar.toInt() and 0xff)}")
+            }
+
+            val modHttp = buildList {
+                if (hostMixedCase) add("h")
+                if (domainMixedCase) add("d")
+                if (hostRemoveSpaces) add("r")
+            }
+            if (modHttp.isNotEmpty()) a.add("-M${modHttp.joinToString(",")}")
+
+            if (tlsRecordSplit && tlsRecordSplitPosition != 0) {
+                val rec = tlsRecordSplitPosition.toString() + if (tlsRecordSplitAtSni) "+s" else ""
+                a.add("-r$rec")
+            }
+            if (tcpFastOpen) a.add("-F")
+            if (dropSack) a.add("-Y")
+            a.add("-An")
+
+            if (desyncUdp) {
+                a.add("-Ku")
+                if (udpFakeCount != 0) a.add("-a$udpFakeCount")
+                a.add("-An")
+            }
+            return a.toTypedArray()
+        }
 
     enum class DesyncMethod {
         None,
