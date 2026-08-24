@@ -9,6 +9,7 @@
 
         <DropDownPreference
             android:key="app_theme"
+            android:icon="@drawable/ic_pref_theme"
             android:title="@string/theme_settings"
             android:entries="@array/themes"
             android:entryValues="@array/themes_entries"
@@ -17,6 +18,7 @@
 
         <DropDownPreference
             android:key="byedpi_mode"
+            android:icon="@drawable/ic_pref_mode"
             android:title="@string/mode_setting"
             android:entries="@array/byedpi_modes"
             android:entryValues="@array/byedpi_modes_entries"
@@ -25,12 +27,14 @@
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="dns_ip"
+            android:icon="@drawable/ic_pref_dns"
             android:title="@string/dbs_ip_setting"
             android:defaultValue="1.1.1.1"
             app:useSimpleSummaryProvider="true" />
 
         <SwitchPreference
             android:key="ipv6_enable"
+            android:icon="@drawable/ic_pref_ipv6"
             android:title="@string/ipv6_setting"
             android:defaultValue="false" />
 
@@ -41,6 +45,7 @@
 
         <DropDownPreference
             android:key="turkey_preset"
+            android:icon="@drawable/ic_pref_preset"
             android:title="@string/turkey_preset_setting"
             android:entries="@array/turkey_presets"
             android:entryValues="@array/turkey_presets_values"
@@ -49,17 +54,20 @@
 
         <SwitchPreference
             android:key="byedpi_enable_cmd_settings"
+            android:icon="@drawable/ic_pref_terminal"
             android:title="@string/use_command_line_settings"
             android:defaultValue="true" />
 
         <Preference
             android:key="byedpi_ui_settings"
+            android:icon="@drawable/ic_pref_tune"
             android:title="@string/ui_editor"
             app:useSimpleSummaryProvider="true"
             app:fragment="com.bariskeser.byedpi.fragments.ByeDpiUISettingsFragment" />
 
         <Preference
             android:key="byedpi_cmd_settings"
+            android:icon="@drawable/ic_pref_code"
             android:title="@string/command_line_editor"
             app:useSimpleSummaryProvider="true"
             app:fragment="com.bariskeser.byedpi.fragments.ByeDpiCommandLineSettingsFragment" />
@@ -71,14 +79,15 @@
 
         <Preference
             android:key="version"
+            android:icon="@drawable/ic_pref_info"
             android:title="@string/version"
             app:useSimpleSummaryProvider="true"
             tools:summary="1.0.0" />
 
         <Preference
             android:key="source_code"
-            android:title="@string/source_code_link"
-            android:icon="@drawable/ic_github_36">
+            android:icon="@drawable/ic_github_36"
+            android:title="@string/source_code_link">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/barkeser2002/BarisKeser-ByeDPI" />
