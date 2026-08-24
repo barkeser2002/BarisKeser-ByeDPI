@@ -8,17 +8,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.bariskeser.byedpi.BuildConfig
 import com.bariskeser.byedpi.R
 import com.bariskeser.byedpi.data.*
 import com.bariskeser.byedpi.fragments.MainSettingsFragment
@@ -148,6 +151,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> { showSection(true); true }
+                R.id.nav_about -> { showSection(false); true }
+                R.id.nav_settings -> { openSettings(); false }
+                else -> false
+            }
+        }
+
+        binding.aboutVersion.text = BuildConfig.VERSION_NAME
+        binding.aboutSource.setOnClickListener {
+            openUrl("https://github.com/barkeser2002/BarisKeser-ByeDPI")
+        }
+        binding.aboutDocs.setOnClickListener {
+            openUrl(getString(R.string.byedpi_docs))
+        }
+
         val theme = getPreferences()
             .getString("app_theme", null)
         MainSettingsFragment.setTheme(theme ?: "system")
@@ -237,6 +257,11 @@ class MainActivity : AppCompatActivity() {
         val proxyPort = preferences.getStringNotNull("byedpi_proxy_port", "1080")
         binding.proxyAddress.text = getString(R.string.proxy_address, proxyIp, proxyPort)
 
+        binding.infoMode.text = getString(R.string.mode_setting) + ": " +
+                if (preferences.mode() == Mode.VPN) "VPN" else "Proxy"
+        binding.infoDns.text = getString(R.string.dbs_ip_setting) + ": " +
+                preferences.getStringNotNull("dns_ip", "1.1.1.1")
+
         when (status) {
             AppStatus.Halted -> {
                 when (preferences.mode()) {
@@ -277,5 +302,27 @@ class MainActivity : AppCompatActivity() {
             ColorStateList.valueOf(ContextCompat.getColor(this, buttonColor))
         binding.statusDot.backgroundTintList =
             ColorStateList.valueOf(ContextCompat.getColor(this, dotColor))
+    }
+
+    private fun showSection(home: Boolean) {
+        binding.homeView.visibility = if (home) View.VISIBLE else View.GONE
+        binding.aboutView.visibility = if (home) View.GONE else View.VISIBLE
+    }
+
+    private fun openSettings() {
+        val (status, _) = appStatus
+        if (status == AppStatus.Halted) {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        } else {
+            Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun openUrl(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to open url", e)
+        }
     }
 }

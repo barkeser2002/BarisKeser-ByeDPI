@@ -11,8 +11,8 @@ android {
         applicationId = "com.bariskeser.byedpi"
         minSdk = 21
         targetSdk = 35
-        versionCode = 11
-        versionName = "2.0.0"
+        versionCode = (findProperty("appVersionCode") as String?)?.toIntOrNull() ?: 11
+        versionName = (findProperty("appVersionName") as String?) ?: "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

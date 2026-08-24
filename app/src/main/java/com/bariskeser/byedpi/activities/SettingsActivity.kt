@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
 import androidx.fragment.app.FragmentManager
+import com.bariskeser.byedpi.BuildConfig
 import com.bariskeser.byedpi.R
 import com.bariskeser.byedpi.fragments.MainSettingsFragment
 import com.bariskeser.byedpi.utility.getPreferences
@@ -13,6 +15,8 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        findViewById<TextView>(R.id.settings_version).text = BuildConfig.VERSION_NAME
 
         supportFragmentManager
             .beginTransaction()

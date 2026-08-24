@@ -17,6 +17,7 @@
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_proxy_ip"
+            android:icon="@drawable/ic_pref_dns"
             android:title="@string/bye_dpi_proxy_ip_setting"
             android:defaultValue="127.0.0.1"
             app:useSimpleSummaryProvider="true" />
@@ -59,6 +60,7 @@
 
         <DropDownPreference
             android:key="byedpi_hosts_mode"
+            android:icon="@drawable/ic_pref_preset"
             android:title="@string/byedpi_hosts_mode_setting"
             android:entries="@array/byedpi_hosts_modes"
             android:entryValues="@array/byedpi_hosts_modes_entries"
@@ -88,6 +90,7 @@
 
         <DropDownPreference
             android:key="byedpi_desync_method"
+            android:icon="@drawable/ic_pref_tune"
             android:title="@string/byedpi_desync_method_setting"
             android:entries="@array/byedpi_desync_methods"
             android:entryValues="@array/byedpi_desync_methods_entries"
@@ -113,6 +116,7 @@
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_fake_ttl"
+            android:icon="@drawable/ic_pref_fake"
             android:title="@string/byedpi_fake_ttl_setting"
             android:inputType="number"
             android:defaultValue="8"
@@ -145,16 +149,19 @@
 
         <CheckBoxPreference
             android:key="byedpi_desync_http"
+            android:icon="@drawable/ic_pref_terminal"
             android:title="@string/desync_http"
             android:defaultValue="true" />
 
         <CheckBoxPreference
             android:key="byedpi_desync_https"
+            android:icon="@drawable/ic_pref_shield"
             android:title="@string/desync_https"
             android:defaultValue="true" />
 
         <CheckBoxPreference
             android:key="byedpi_desync_udp"
+            android:icon="@drawable/ic_pref_ipv6"
             android:title="@string/desync_udp"
             android:defaultValue="false" />
 
@@ -185,6 +192,7 @@
 
         <CheckBoxPreference
             android:key="byedpi_tlsrec_enabled"
+            android:icon="@drawable/ic_pref_shield"
             android:title="@string/byedpi_tlsrec_enabled_setting"
             android:defaultValue="false"/>
 

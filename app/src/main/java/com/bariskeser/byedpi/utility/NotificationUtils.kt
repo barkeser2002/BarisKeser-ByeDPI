@@ -42,7 +42,7 @@ fun createConnectionNotification(
         .setSilent(true)
             .setContentTitle(context.getString(title))
             .setContentText(context.getString(content))
-            .addAction(0, "Stop",
+            .addAction(0, context.getString(R.string.proxy_stop),
                 PendingIntent.getService(
                     context,
                     0,

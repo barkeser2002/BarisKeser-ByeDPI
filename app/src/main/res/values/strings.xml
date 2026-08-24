@@ -26,7 +26,7 @@
     <string name="byedpi_buffer_size_setting">Tampon boyutu</string>
     <string name="byedpi_default_ttl_setting">Varsayılan TTL</string>
     <string name="byedpi_no_domain_setting">Alan adı çözümleme yok</string>
-    <string name="byedpi_desync_method_setting">Desync yöntemi</string>
+    <string name="byedpi_desync_method_setting">Bozma yöntemi</string>
     <string name="byedpi_split_position_setting">Bölme konumu</string>
     <string name="byedpi_split_at_host_setting">Host konumunda böl</string>
     <string name="byedpi_fake_ttl_setting">Sahte paketlerin TTL\'si</string>
@@ -51,18 +51,18 @@
     <string name="command_line_editor">Komut satırı düzenleyici</string>
     <string name="ui_editor">Arayüz düzenleyici</string>
     <string name="use_command_line_settings">Komut satırı ayarlarını kullan</string>
-    <string name="desync_http">HTTP desync</string>
-    <string name="desync_https">HTTPS desync</string>
-    <string name="desync_udp">UDP desync</string>
+    <string name="desync_http">HTTP bozma</string>
+    <string name="desync_https">HTTPS bozma</string>
+    <string name="desync_udp">UDP bozma</string>
     <string name="oob_data">OOB Verisi</string>
     <string name="sni_of_fake_packet">Sahte paketin SNI\'si</string>
     <string name="byedpi_proxy">Proxy</string>
-    <string name="byedpi_desync">Desync</string>
+    <string name="byedpi_desync">Bozma</string>
     <string name="command_line_arguments">Komut satırı argümanları</string>
     <string name="byedpi_hosts_mode_setting">Host listesi</string>
     <string name="byedpi_hosts_blacklist_setting">Host kara listesi</string>
     <string name="byedpi_hosts_whitelist_setting">Host beyaz listesi</string>
-    <string name="byedpi_tcp_fast_open_setting">TCP Fast Open</string>
+    <string name="byedpi_tcp_fast_open_setting">TCP Hızlı Açılış (TFO)</string>
     <string name="byedpi_udp_fake_count">UDP sahte sayısı</string>
     <string name="ipv6_setting">IPv6</string>
     <string name="byedpi_fake_offset_setting">Sahte ofset</string>
@@ -74,4 +74,10 @@
     <string name="byedpi_protocols_hint">Tüm trafiği desync etmek için hepsinin işaretini kaldırın</string>
     <string name="turkey_preset_setting">Türkiye Preseti (ISP)</string>
     <string name="byedpi_default_cmd_args">--split 1 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s</string>
+    <string name="invalid_value">%1$s için geçersiz değer: %2$s</string>
+    <string name="documentation">Belgeler</string>
+    <string name="nav_home">Ana Sayfa</string>
+    <string name="about_tagline">DPI ve sansürü aş</string>
+    <string name="active_preset_label">Aktif preset</string>
+    <string name="about_engine">Motor: ByeDPI v0.17.3</string>
 </resources>

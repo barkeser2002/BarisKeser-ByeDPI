@@ -5,72 +5,222 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp"
     tools:context=".activities.MainActivity">
 
-    <ImageView
-        android:id="@+id/app_logo"
-        android:layout_width="176dp"
-        android:layout_height="176dp"
-        android:layout_marginBottom="32dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/app_logo" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/status_button"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:minWidth="240dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:textAllCaps="false"
-        android:textSize="20sp"
-        android:letterSpacing="0.01"
-        app:cornerRadius="30dp"
-        app:backgroundTint="@color/connect_button"
-        tools:text="@string/vpn_connect" />
+        <!-- ===== HOME ===== -->
+        <ScrollView
+            android:id="@+id/home_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="3dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="24dp">
+
+                        <ImageView
+                            android:id="@+id/app_logo"
+                            android:layout_width="152dp"
+                            android:layout_height="152dp"
+                            android:layout_marginBottom="24dp"
+                            android:contentDescription="@string/app_name"
+                            android:src="@drawable/app_logo" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/status_button"
+                            style="@style/Widget.MaterialComponents.Button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="60dp"
+                            android:minWidth="240dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:textAllCaps="false"
+                            android:textSize="20sp"
+                            android:letterSpacing="0.01"
+                            app:cornerRadius="30dp"
+                            app:backgroundTint="@color/connect_button"
+                            tools:text="@string/vpn_connect" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/status_chip"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp">
+
+                            <View
+                                android:id="@+id/status_dot"
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@drawable/status_dot"
+                                android:backgroundTint="@color/dot_idle" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/status_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:textSize="15sp"
+                                android:textColor="?android:attr/textColorPrimary"
+                                tools:text="@string/vpn_disconnected" />
+                        </LinearLayout>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/proxy_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:alpha="0.6"
+                            android:textSize="13sp"
+                            android:fontFamily="monospace"
+                            android:textColor="?android:attr/textColorSecondary"
+                            tools:text="127.0.0.1:1080" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="18dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/info_mode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp"
+                            android:textColor="?android:attr/textColorPrimary"
+                            tools:text="Mod: VPN" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/info_dns"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:textSize="14sp"
+                            android:textColor="?android:attr/textColorSecondary"
+                            tools:text="DNS: 1.1.1.1" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ===== ABOUT ===== -->
+        <ScrollView
+            android:id="@+id/about_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="28dp">
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="16dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/app_logo" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/app_name"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/about_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textSize="14sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    tools:text="2.0.0" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/about_tagline"
+                    android:textSize="15sp"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/about_engine"
+                    android:textSize="13sp"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/about_source"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:textAllCaps="false"
+                    android:text="@string/source_code_link"
+                    app:icon="@drawable/ic_github_36" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/about_docs"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textAllCaps="false"
+                    android:text="@string/documentation"
+                    app:icon="@drawable/ic_pref_code" />
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="22dp"
-        android:background="@drawable/status_chip"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
-
-        <View
-            android:id="@+id/status_dot"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:background="@drawable/status_dot"
-            android:backgroundTint="@color/dot_idle" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/status_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textSize="15sp"
-            android:textColor="?android:attr/textColorPrimary"
-            tools:text="@string/vpn_disconnected" />
-
-    </LinearLayout>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/proxy_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:alpha="0.6"
-        android:textSize="13sp"
-        android:fontFamily="monospace"
-        android:textColor="?android:attr/textColorSecondary"
-        tools:text="127.0.0.1:1080" />
+        app:menu="@menu/bottom_nav" />
 
 </LinearLayout>
