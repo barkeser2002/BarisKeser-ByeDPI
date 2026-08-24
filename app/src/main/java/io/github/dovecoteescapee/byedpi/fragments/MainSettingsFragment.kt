@@ -66,6 +66,18 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
+        val turkeyPreset = findPreferenceNotNull<DropDownPreference>("turkey_preset")
+        turkeyPreset.setOnPreferenceChangeListener { _, newValue ->
+            val cmd = newValue as String
+            preferenceManager.sharedPreferences?.edit()
+                ?.putString("byedpi_cmd_args", cmd)
+                ?.putBoolean("byedpi_enable_cmd_settings", true)
+                ?.apply()
+            switchCommandLineSettings.isChecked = true
+            setByeDpiSettingsMode(true)
+            true
+        }
+
         findPreferenceNotNull<Preference>("version").summary = BuildConfig.VERSION_NAME
 
         updatePreferences()

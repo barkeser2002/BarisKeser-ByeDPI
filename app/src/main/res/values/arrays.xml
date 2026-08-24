@@ -47,4 +47,19 @@
         <item name="blacklist">blacklist</item>
         <item name="whitelist">whitelist</item>
     </array>
+
+    <array name="turkey_presets">
+        <item>Genel (önerilen)</item>
+        <item>Türk Telekom / Kablonet</item>
+        <item>Turkcell Superonline</item>
+        <item>Superonline (TTL\'siz)</item>
+        <item>Vodafone / Mobil</item>
+    </array>
+    <array name="turkey_presets_values">
+        <item>--split 1 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s</item>
+        <item>--fake 1+s --ttl 4 --split 1 --disorder 3+s --auto=torst --tlsrec 1+s</item>
+        <item>--fake 1+s --ttl 3 --fake-sni www.google.com --fake-tls-mod rand --auto=torst --tlsrec 1+s</item>
+        <item>--split 2 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s</item>
+        <item>--split 2 --disorder 1+s --auto=torst --tlsrec 1+s</item>
+    </array>
 </resources>

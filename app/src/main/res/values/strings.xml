@@ -72,4 +72,6 @@
     <string name="desync_https_category">HTTPS</string>
     <string name="byedpi_protocols_category">Protocols</string>
     <string name="byedpi_protocols_hint">Uncheck all to desync all traffic</string>
+    <string name="turkey_preset_setting">Türkiye Preseti (ISP)</string>
+    <string name="byedpi_default_cmd_args">--split 1 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s</string>
 </resources>

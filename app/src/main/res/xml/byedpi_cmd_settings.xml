@@ -19,6 +19,7 @@
             android:title="@string/command_line_arguments"
             android:dialogTitle="@string/command_line_arguments"
             android:inputType="textMultiLine"
+            android:defaultValue="@string/byedpi_default_cmd_args"
             app:useSimpleSummaryProvider="true" />
 
     </androidx.preference.PreferenceCategory>
