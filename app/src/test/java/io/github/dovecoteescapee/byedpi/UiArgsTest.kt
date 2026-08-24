@@ -23,6 +23,12 @@ class UiArgsTest {
     }
 
     @Test
+    fun cmd_ipset_flag_does_not_suppress_ip_and_port_injection() {
+        val a = ByeDpiProxyCmdPreferences("--ipset /sdcard/set.txt --split 1").args.toList()
+        assertTrue(a.containsAll(listOf("--ip", "127.0.0.1", "--port", "1080")))
+    }
+
+    @Test
     fun ui_defaults_emit_listen_and_desync() {
         val a = ByeDpiProxyUIPreferences().args.toList()
         assertEquals("ciadpi", a.first())

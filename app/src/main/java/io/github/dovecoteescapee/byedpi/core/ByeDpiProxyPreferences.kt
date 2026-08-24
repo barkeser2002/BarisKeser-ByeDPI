@@ -31,14 +31,23 @@ class ByeDpiProxyCmdPreferences(
     override val args: Array<String> = run {
         val firstArgIndex = cmd.indexOf("-")
         val body = (if (firstArgIndex > 0) cmd.substring(firstArgIndex) else cmd).trim()
-        val hasIp = Regex("(^|\\s)(-i|--ip)(\\s|=|\\S)").containsMatchIn(body)
-        val hasPort = Regex("(^|\\s)(-p|--port)(\\s|=|\\S)").containsMatchIn(body)
-        val prefix = buildString {
-            if (!hasIp) append("--ip $ip ")
-            if (!hasPort) append("--port $port ")
+        val bodyTokens = shellSplit(body)
+
+        // A flag is present if a token is exactly the short/long form, an attached
+        // short form (-i127.0.0.1), or the long form with '=' (--ip=...). This must
+        // NOT match longer flags that merely share a prefix, e.g. --ipset / --ip.
+        fun hasFlag(short: String, long: String): Boolean = bodyTokens.any { t ->
+            t == short || t == long ||
+                (t.startsWith(short) && !t.startsWith("--")) ||
+                t.startsWith("$long=")
         }
+
+        val prefix = mutableListOf<String>()
+        if (!hasFlag("-i", "--ip")) { prefix += "--ip"; prefix += ip }
+        if (!hasFlag("-p", "--port")) { prefix += "--port"; prefix += port }
+
         val blacklist = setOf("--help", "--version", "-h", "-v")
-        arrayOf("ciadpi") + shellSplit("$prefix$body").filter { it !in blacklist }
+        (listOf("ciadpi") + prefix + bodyTokens).filter { it !in blacklist }.toTypedArray()
     }
 }
 
@@ -86,7 +95,7 @@ class ByeDpiProxyUIPreferences(
     val splitAtHost: Boolean = splitAtHost ?: false
     val fakeTtl: Int = fakeTtl ?: 8
     val fakeSni: String = fakeSni ?: "www.iana.org"
-    val oobChar: Byte = (oobChar ?: "a")[0].code.toByte()
+    val oobChar: Byte = (oobChar?.ifEmpty { "a" } ?: "a")[0].code.toByte()
     val hostMixedCase: Boolean = hostMixedCase ?: false
     val domainMixedCase: Boolean = domainMixedCase ?: false
     val hostRemoveSpaces: Boolean = hostRemoveSpaces ?: false
