@@ -57,4 +57,4 @@ repository.
 ## Contact
 
 Questions: open an issue at
-https://github.com/barkeser2002/ByeDPIAndroid/issues
+https://github.com/barkeser2002/BarisKeser-ByeDPI/issues

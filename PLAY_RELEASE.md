@@ -36,7 +36,7 @@ be completed by you in the Play Console / your machine.
 - **Privacy policy URL (required for VPN apps):** host `PRIVACY.md` publicly and paste
   the URL in Play Console → Store listing / App content. Easiest: enable GitHub Pages, or
   link the raw file:
-  `https://raw.githubusercontent.com/barkeser2002/ByeDPIAndroid/master/PRIVACY.md`
+  `https://raw.githubusercontent.com/barkeser2002/BarisKeser-ByeDPI/master/PRIVACY.md`
 - **Data safety form:** declare **No data collected / no data shared** (matches PRIVACY.md).
 - **VpnService policy:** Play scrutinizes VPN apps. Declare that VpnService is the app's
   **core functionality** (on-device DPI-bypass tunnel; no remote VPN server). Be ready to

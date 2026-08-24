@@ -2,6 +2,7 @@ name: Release APK
 
 on:
   push:
+    branches: [ master ]
     tags: [ 'v*' ]
   workflow_dispatch:
 
@@ -70,13 +71,23 @@ jobs:
           name: byedpi-release-aab
           path: app/build/outputs/bundle/release/*.aab
 
-      - name: Create GitHub Release (on tag)
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Publish GitHub Release (tag or master)
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" \
-            "${{ steps.out.outputs.apk }}" \
-            "${{ steps.out.outputs.aab }}" \
-            --title "BarisKeser-ByeDPI ${GITHUB_REF_NAME}" \
-            --generate-notes
+          if [ "${{ startsWith(github.ref, 'refs/tags/') }}" = "true" ]; then
+            TAG="${GITHUB_REF_NAME}"
+          else
+            VN=$(grep -m1 'versionName' app/build.gradle.kts | sed -E 's/.*"([^"]+)".*/\1/')
+            TAG="v${VN}"
+          fi
+          echo "Release tag: $TAG"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" \
+              "${{ steps.out.outputs.apk }}" "${{ steps.out.outputs.aab }}" --clobber
+          else
+            gh release create "$TAG" \
+              "${{ steps.out.outputs.apk }}" "${{ steps.out.outputs.aab }}" \
+              --title "BarisKeser-ByeDPI $TAG" --generate-notes --target "${GITHUB_SHA}"
+          fi

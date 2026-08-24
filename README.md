@@ -17,7 +17,7 @@ This application runs a SOCKS5 proxy [ByeDPI](https://github.com/hufrea/byedpi) 
 
 [<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"
     alt="Get it on GitHub"
-    height="80">](https://github.com/dovecoteescapee/ByeDPIAndroid/releases)
+    height="80">](https://github.com/barkeser2002/BarisKeser-ByeDPI/releases)
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
     alt="Get it on IzzyOnDroid"
     height="80">](https://apt.izzysoft.de/fdroid/index/apk/io.github.dovecoteescapee.byedpi)
@@ -26,7 +26,7 @@ This application runs a SOCKS5 proxy [ByeDPI](https://github.com/hufrea/byedpi) 
 
 1. Install [Obtainium](https://github.com/ImranR98/Obtainium/blob/main/README.md#installation)
 2. Add the app by URL:  
-   `https://github.com/dovecoteescapee/ByeDPIAndroid`
+   `https://github.com/barkeser2002/BarisKeser-ByeDPI`
 
 ## Settings
 
@@ -36,7 +36,7 @@ To bypass some blocks, you may need to change the settings. More about the vario
 
 ### I can't configure it. What to do?
 
-You can ask for help in [discussion](https://github.com/dovecoteescapee/ByeDPIAndroid/discussions).
+You can ask for help in [discussion](https://github.com/barkeser2002/BarisKeser-ByeDPI/discussions).
 
 ### Does the application require root access?
 
