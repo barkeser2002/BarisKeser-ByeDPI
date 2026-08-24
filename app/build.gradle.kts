@@ -28,12 +28,31 @@ android {
         buildConfig = true
     }
 
+    signingConfigs {
+        create("release") {
+            // Values come from environment variables (CI sets them from GitHub Secrets,
+            // or export them locally). Never hard-code keystore paths/passwords in VCS.
+            System.getenv("KEYSTORE_FILE")?.let { path ->
+                storeFile = file(path)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             buildConfigField("String", "VERSION_NAME",  "\"${defaultConfig.versionName}\"")
 
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+
+            // Signed only when a keystore is provided (CI with secrets); otherwise
+            // assembleRelease still succeeds and produces an unsigned APK.
+            signingConfig = System.getenv("KEYSTORE_FILE")?.let {
+                signingConfigs.getByName("release")
+            }
         }
         debug {
             buildConfigField("String", "VERSION_NAME",  "\"${defaultConfig.versionName}-debug\"")
