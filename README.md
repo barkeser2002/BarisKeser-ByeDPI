@@ -1,4 +1,4 @@
-# ByeDPI for Android
+# BarisKeser-ByeDPI
 
 **English** | [Русский](README-ru.md)
 
@@ -30,7 +30,7 @@ This application runs a SOCKS5 proxy [ByeDPI](https://github.com/hufrea/byedpi) 
 
 ## Settings
 
-To bypass some blocks, you may need to change the settings. More about the various settings can be found in the [ByeDPI documentation](https://github.com/hufrea/byedpi/blob/v0.13/README.md).
+To bypass some blocks, you may need to change the settings. More about the various settings can be found in the [ByeDPI documentation](https://github.com/hufrea/byedpi/blob/v0.17.3/README.md).
 
 ## FAQ
 

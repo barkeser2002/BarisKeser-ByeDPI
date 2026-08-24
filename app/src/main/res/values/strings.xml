@@ -1,6 +1,6 @@
 <resources>
-    <string name="byedpi_docs">https://github.com/hufrea/byedpi/blob/v0.13/README.md</string>
-    <string name="app_name">ByeDPI</string>
+    <string name="byedpi_docs">https://github.com/hufrea/byedpi/blob/v0.17.3/README.md</string>
+    <string name="app_name">BarisKeser-ByeDPI</string>
     <string name="vpn_connect">Connect</string>
     <string name="vpn_disconnect">Disconnect</string>
     <string name="vpn_connected">Connected</string>
@@ -42,7 +42,7 @@
     <string name="failed_to_start">Failed to start %1$s</string>
     <string name="vpn_channel_name">VPN</string>
     <string name="proxy_channel_name">Proxy</string>
-    <string name="notification_title">ByeDPI</string>
+    <string name="notification_title">BarisKeser-ByeDPI</string>
     <string name="vpn_notification_content">VPN is running</string>
     <string name="proxy_notification_content">Proxy is running</string>
     <string name="general_category">General</string>
