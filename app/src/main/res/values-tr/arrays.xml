@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Display labels only; entryValues arrays keep their default (unlocalized) keys -->
+    <array name="themes">
+        <item>Sistem</item>
+        <item>Açık</item>
+        <item>Koyu</item>
+    </array>
+
+    <array name="byedpi_modes">
+        <item>VPN</item>
+        <item>Proxy</item>
+    </array>
+
+    <array name="byedpi_desync_methods">
+        <item>Yok</item>
+        <item>Split</item>
+        <item>Disorder</item>
+        <item>Fake</item>
+        <item>Out-of-band</item>
+        <item>Disordered out-of-band</item>
+    </array>
+
+    <array name="byedpi_hosts_modes">
+        <item>Devre dışı</item>
+        <item>Kara liste</item>
+        <item>Beyaz liste</item>
+    </array>
+</resources>
