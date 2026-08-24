@@ -34,7 +34,7 @@ void reset_params(void) {
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(
+Java_com_bariskeser_byedpi_core_ByeDpiProxy_jniStartProxy(
         JNIEnv *env, __attribute__((unused)) jobject thiz, jobjectArray args) {
     if (g_proxy_running) {
         LOG(LOG_S, "proxy already running");
@@ -77,7 +77,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(
+Java_com_bariskeser_byedpi_core_ByeDpiProxy_jniStopProxy(
         __attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
     LOG(LOG_S, "send shutdown to proxy");
     if (!g_proxy_running) {
@@ -90,7 +90,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniForceClose(
+Java_com_bariskeser_byedpi_core_ByeDpiProxy_jniForceClose(
         __attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
     LOG(LOG_S, "closing server socket (fd: %d)", server_fd);
     if (close(server_fd) == -1) {

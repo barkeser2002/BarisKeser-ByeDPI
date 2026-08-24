@@ -1,97 +1,74 @@
 # BarisKeser-ByeDPI
 
-**English** | [Русский](README-ru.md)
+**English** | [Türkçe](README-tr.md) | [Русский](README-ru.md)
 
-<div style="text-align: center;">
-  <img alt="ByeDPI logo" src=".github/images/logo.svg" width="100%" height="200px">
+<div align="center">
+  <img alt="BarisKeser-ByeDPI logo" src="bariskeser-byedpi-logo.png" width="180" height="180">
 </div>
 
 ---
 
-Android application that runs a local VPN service to bypass DPI (Deep Packet Inspection) and censorship.
+Android app that bypasses **DPI (Deep Packet Inspection)** and censorship — with no remote server. It runs the [ByeDPI](https://github.com/hufrea/byedpi) engine (**v0.17.3**) as a local SOCKS5 proxy on your device and, in VPN mode, routes traffic through it using Android's on-device VPN. Nothing is sent to a remote VPN server, your traffic is not proxied off-device, and your IP is not hidden — only the way the first packets of a connection are sent is changed so DPI systems cannot easily block them.
 
+## Features
 
-This application runs a SOCKS5 proxy [ByeDPI](https://github.com/hufrea/byedpi) and redirects all traffic through it.
+- **VPN mode** (system-wide) or **local SOCKS5 proxy** mode
+- **Turkey ISP presets** — Genel (recommended), Türk Telekom / Kablonet, Turkcell Superonline, Superonline (no-TTL), Vodafone / Mobile
+- Advanced **command-line editor** for custom ByeDPI strategies (split, disorder, fake, TTL, TLS record split, and more)
+- Configurable DNS and IPv6 in VPN mode
+- Quick Settings tile
+- English + Turkish UI
+- No accounts, no ads, no analytics, no tracking
 
 ## Installation
 
 [<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"
     alt="Get it on GitHub"
     height="80">](https://github.com/barkeser2002/BarisKeser-ByeDPI/releases)
-[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
-    alt="Get it on IzzyOnDroid"
-    height="80">](https://apt.izzysoft.de/fdroid/index/apk/io.github.dovecoteescapee.byedpi)
 
 ### Or use Obtainium
 
 1. Install [Obtainium](https://github.com/ImranR98/Obtainium/blob/main/README.md#installation)
-2. Add the app by URL:  
+2. Add the app by URL:
    `https://github.com/barkeser2002/BarisKeser-ByeDPI`
+
+## Turkey presets
+
+Open **Settings → Türkiye Preseti (ISP)** and pick your provider. The default **Genel** profile is a verified working strategy; if a site is slow or blocked on your ISP, try the ISP-specific presets. These write a ByeDPI command line that you can further tweak in the command-line editor.
 
 ## Settings
 
-To bypass some blocks, you may need to change the settings. More about the various settings can be found in the [ByeDPI documentation](https://github.com/hufrea/byedpi/blob/v0.17.3/README.md).
+More about the various options can be found in the [ByeDPI documentation](https://github.com/hufrea/byedpi/blob/v0.17.3/README.md).
 
 ## FAQ
 
-### I can't configure it. What to do?
+**Does the app require root?** No. All features work without root.
 
-You can ask for help in [discussion](https://github.com/barkeser2002/BarisKeser-ByeDPI/discussions).
+**Is this a VPN?** It uses Android's VPN mode to redirect traffic locally, but it does not send anything to a remote server, does not encrypt traffic, and does not hide your IP.
 
-### Does the application require root access?
+**What data does it collect?** None. All processing happens on your device. See [PRIVACY.md](PRIVACY.md).
 
-No. All application features work without root.
+## Building
 
-### Is this a VPN?
+Requirements: JDK 17+, Android SDK, Android NDK, CMake 3.22.1+.
 
-No. The application uses the VPN mode on Android to redirect traffic, but does not send anything to a remote server. It does not encrypt traffic and does not hide your IP address.
-
-### How to use ByeDPI with AdGuard?
-
-1. Run ByeDPI in proxy mode.
-2. Add ByeDPI to AdGuard exceptions on the "App management" tab.
-3. In AdGuard settings, specify the proxy:
-
-   ```plaintext
-   Proxy type: SOCKS5
-   Proxy host: 127.0.0.1
-   Proxy port: 1080 (default)
+1. Clone with submodules:
+   ```bash
+   git clone --recurse-submodules https://github.com/barkeser2002/BarisKeser-ByeDPI
    ```
+2. Build:
+   ```bash
+   ./gradlew assembleRelease
+   ```
+3. The APK will be in `app/build/outputs/apk/release/`.
 
-### What data does the application collect?
-
-None. The application does not send any data to a remote server. All traffic is processed on the device.
-
-### Are there any for other platforms?
-
-[Similar projects](https://github.com/ValdikSS/GoodbyeDPI/blob/master/README.md#similar-projects))
-
-### What is DPI?
-
-DPI (Deep Packet Inspection) is a technology for analyzing and filtering traffic. It is used by providers and government agencies to block sites and services.
+CI (GitHub Actions) builds a debug APK on every pull request and a signed APK + AAB on every push to `master` and on `v*` tags.
 
 ## Dependencies
 
 - [ByeDPI](https://github.com/hufrea/byedpi)
 - [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
 
-## Building
+## License
 
-For building the application, you need:
-
-1. JDK 8 or later
-2. Android SDK
-3. Android NDK
-4. CMake 3.22.1 or later
-
-To build the application:
-
-1. Clone the repository with submodules:
-   ```bash
-   git clone --recurse-submodules
-   ```
-2. Run the build script from the root of the repository:
-   ```bash
-   ./gradlew assembleRelease
-   ```
-3. The APK will be in `app/build/outputs/apk/release/`
+GPL-3.0. This is a fork/derivative of ByeDPIAndroid; upstream copyrights are retained.
