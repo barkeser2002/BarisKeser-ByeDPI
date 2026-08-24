@@ -39,10 +39,18 @@
     <androidx.preference.PreferenceCategory
         android:title="@string/byedpi_category">
 
+        <DropDownPreference
+            android:key="turkey_preset"
+            android:title="@string/turkey_preset_setting"
+            android:entries="@array/turkey_presets"
+            android:entryValues="@array/turkey_presets_values"
+            android:defaultValue="--split 1 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s"
+            app:useSimpleSummaryProvider="true" />
+
         <SwitchPreference
             android:key="byedpi_enable_cmd_settings"
             android:title="@string/use_command_line_settings"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
 
         <Preference
             android:key="byedpi_ui_settings"
@@ -73,7 +81,7 @@
             android:icon="@drawable/ic_github_36">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/dovecoteescapee/ByeDPIAndroid" />
+                android:data="https://github.com/barkeser2002/ByeDPIAndroid" />
         </Preference>
 
     </androidx.preference.PreferenceCategory>

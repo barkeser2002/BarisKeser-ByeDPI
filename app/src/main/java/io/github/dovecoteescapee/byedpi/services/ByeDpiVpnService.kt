@@ -21,12 +21,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 
 class ByeDpiVpnService : LifecycleVpnService() {
     private val byeDpiProxy = ByeDpiProxy()
     private var proxyJob: Job? = null
     private var tunFd: ParcelFileDescriptor? = null
+    private var configFile: File? = null
     private val mutex = Mutex()
     private var stopping: Boolean = false
 
@@ -164,7 +166,12 @@ class ByeDpiVpnService : LifecycleVpnService() {
         }
 
         byeDpiProxy.stopProxy()
-        proxyJob?.join() ?: throw IllegalStateException("ProxyJob field null")
+        val joined = withTimeoutOrNull(3000) { proxyJob?.join() }
+        if (joined == null) {
+            Log.w(TAG, "join timeout, force closing")
+            byeDpiProxy.forceClose()
+            proxyJob?.join()
+        }
         proxyJob = null
 
         Log.i(TAG, "Proxy stopped")
@@ -201,6 +208,8 @@ class ByeDpiVpnService : LifecycleVpnService() {
             throw e
         }
 
+        this.configFile = configPath
+
         val fd = createBuilder(dns, ipv6).establish()
             ?: throw IllegalStateException("VPN connection failed")
 
@@ -217,10 +226,11 @@ class ByeDpiVpnService : LifecycleVpnService() {
         TProxyService.TProxyStopService()
 
         try {
-            File(cacheDir, "config.tmp").delete()
+            configFile?.delete()
         } catch (e: SecurityException) {
             Log.e(TAG, "Failed to delete config file", e)
         }
+        configFile = null
 
         tunFd?.close() ?: Log.w(TAG, "VPN not running")
         tunFd = null
@@ -272,7 +282,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private fun createBuilder(dns: String, ipv6: Boolean): Builder {
         Log.d(TAG, "DNS: $dns")
         val builder = Builder()
-        builder.setSession("ByeDPI")
+        builder.setSession("BarisKeser-ByeDPI")
         builder.setConfigureIntent(
             PendingIntent.getActivity(
                 this,

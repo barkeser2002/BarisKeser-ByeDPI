@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 class ByeDpiProxyService : LifecycleService() {
     private var proxy = ByeDpiProxy()
@@ -141,7 +142,12 @@ class ByeDpiProxyService : LifecycleService() {
         }
 
         proxy.stopProxy()
-        proxyJob?.join()
+        val joined = withTimeoutOrNull(3000) { proxyJob?.join() }
+        if (joined == null) {
+            Log.w(TAG, "join timeout, force closing")
+            proxy.forceClose()
+            proxyJob?.join()
+        }
         proxyJob = null
 
         Log.i(TAG, "Proxy stopped")

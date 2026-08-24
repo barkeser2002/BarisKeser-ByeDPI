@@ -26,7 +26,7 @@
         <item name="disorder">Disorder</item>
         <item name="fake">Fake</item>
         <item name="oob">Out-of-band</item>
-        <item name="oob">Disordered out-of-band</item>
+        <item name="disoob">Disordered out-of-band</item>
     </array>
     <array name="byedpi_desync_methods_entries">
         <item name="none">none</item>
@@ -34,7 +34,7 @@
         <item name="disorder">disorder</item>
         <item name="fake">fake</item>
         <item name="oob">oob</item>
-        <item name="oob">disoob</item>
+        <item name="disoob">disoob</item>
     </array>
 
     <array name="byedpi_hosts_modes">
@@ -46,5 +46,20 @@
         <item name="disable">disable</item>
         <item name="blacklist">blacklist</item>
         <item name="whitelist">whitelist</item>
+    </array>
+
+    <array name="turkey_presets">
+        <item>Genel (önerilen)</item>
+        <item>Türk Telekom / Kablonet</item>
+        <item>Turkcell Superonline</item>
+        <item>Superonline (TTL\'siz)</item>
+        <item>Vodafone / Mobil</item>
+    </array>
+    <array name="turkey_presets_values">
+        <item>--split 1 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s</item>
+        <item>--fake 1+s --ttl 4 --split 1 --disorder 3+s --auto=torst --tlsrec 1+s</item>
+        <item>--fake 1+s --ttl 3 --fake-sni www.google.com --fake-tls-mod rand --auto=torst --tlsrec 1+s</item>
+        <item>--split 2 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s</item>
+        <item>--split 2 --disorder 1+s --auto=torst --tlsrec 1+s</item>
     </array>
 </resources>

@@ -11,8 +11,8 @@ android {
         applicationId = "io.github.dovecoteescapee.byedpi"
         minSdk = 21
         targetSdk = 34
-        versionCode = 10
-        versionName = "1.2.0"
+        versionCode = 11
+        versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
