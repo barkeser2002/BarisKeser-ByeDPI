@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.dovecoteescapee.byedpi"
+    namespace = "com.bariskeser.byedpi"
     compileSdk = 35
 
     defaultConfig {

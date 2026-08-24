@@ -56,13 +56,13 @@
             android:key="byedpi_ui_settings"
             android:title="@string/ui_editor"
             app:useSimpleSummaryProvider="true"
-            app:fragment="io.github.dovecoteescapee.byedpi.fragments.ByeDpiUISettingsFragment" />
+            app:fragment="com.bariskeser.byedpi.fragments.ByeDpiUISettingsFragment" />
 
         <Preference
             android:key="byedpi_cmd_settings"
             android:title="@string/command_line_editor"
             app:useSimpleSummaryProvider="true"
-            app:fragment="io.github.dovecoteescapee.byedpi.fragments.ByeDpiCommandLineSettingsFragment" />
+            app:fragment="com.bariskeser.byedpi.fragments.ByeDpiCommandLineSettingsFragment" />
 
     </androidx.preference.PreferenceCategory>
 
