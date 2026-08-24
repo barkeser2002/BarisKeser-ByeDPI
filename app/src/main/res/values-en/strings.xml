@@ -74,4 +74,10 @@
     <string name="byedpi_protocols_hint">Uncheck all to desync all traffic</string>
     <string name="turkey_preset_setting">Türkiye Preseti (ISP)</string>
     <string name="byedpi_default_cmd_args">--split 1 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s</string>
+    <string name="invalid_value">Invalid value for %1$s: %2$s</string>
+    <string name="documentation">Documentation</string>
+    <string name="nav_home">Home</string>
+    <string name="about_tagline">Bypass DPI and censorship</string>
+    <string name="active_preset_label">Active preset</string>
+    <string name="about_engine">Engine: ByeDPI v0.17.3</string>
 </resources>

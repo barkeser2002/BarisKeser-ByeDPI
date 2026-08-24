@@ -22,11 +22,11 @@
 
     <array name="byedpi_desync_methods">
         <item>Yok</item>
-        <item>Split</item>
-        <item>Disorder</item>
-        <item>Fake</item>
-        <item>Out-of-band</item>
-        <item>Disordered out-of-band</item>
+        <item>Bölme</item>
+        <item>Karıştırma</item>
+        <item>Sahte</item>
+        <item>Bant-dışı</item>
+        <item>Karışık bant-dışı</item>
     </array>
     <array name="byedpi_desync_methods_entries">
         <item name="none">none</item>

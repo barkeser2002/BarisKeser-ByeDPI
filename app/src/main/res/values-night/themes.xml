@@ -1,13 +1,13 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="Theme.ByeDPI" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryVariant">#E5E5E5</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">#5976DF</item>
-        <item name="colorSecondaryVariant">#3C52A3</item>
+    <!-- Dark brand palette. Overrides only the Base; Theme.ByeDPI (values/ and values-v35)
+         inherits from this Base in night mode. -->
+    <style name="Theme.ByeDPI.Base" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">#23305C</item>
+        <item name="colorPrimaryVariant">#161E3D</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">#FF7A5C</item>
+        <item name="colorSecondaryVariant">#E5522F</item>
         <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
 </resources>

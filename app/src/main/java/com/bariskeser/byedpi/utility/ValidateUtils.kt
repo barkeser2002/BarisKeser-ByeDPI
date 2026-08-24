@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
+import com.bariskeser.byedpi.R
 
 private const val TAG = "ValidateUtils"
 
@@ -57,7 +58,7 @@ fun PreferenceFragmentCompat.setEditTextPreferenceListener(
                     if (!valid) {
                         Toast.makeText(
                             requireContext(),
-                            "Invalid value for ${preference.title}: $newValue",
+                            requireContext().getString(R.string.invalid_value, preference.title, newValue),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
