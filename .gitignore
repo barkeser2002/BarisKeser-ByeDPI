@@ -15,3 +15,9 @@
 .cxx
 local.properties
 /app/src/main/jniLibs
+/keys/
+/keys/*
+*.jks
+*.keystore
+*.b64
+keystore.properties
