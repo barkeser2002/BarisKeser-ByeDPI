@@ -5,12 +5,18 @@ plugins {
 
 android {
     namespace = "com.bariskeser.byedpi"
-    compileSdk = 35
+    compileSdk = 36
+
+    // Pin an NDK that aligns native libraries to 16 KB pages by default (r27+).
+    // Google Play requires 16 KB page-size support for apps with native code
+    // targeting Android 15+ (API 35+). Both build systems (CMake and ndk-build)
+    // resolve their toolchain from this version.
+    ndkVersion = "27.2.12479018"
 
     defaultConfig {
         applicationId = "com.bariskeser.byedpi"
         minSdk = 21
-        targetSdk = 35
+        targetSdk = 36
         versionCode = (findProperty("appVersionCode") as String?)?.toIntOrNull() ?: 11
         versionName = (findProperty("appVersionName") as String?) ?: "2.0.0"
 
