@@ -13,7 +13,14 @@
     <uses-feature android:name="android.software.leanback"
         android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen"
-        android:required="false" />    
+        android:required="false" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
 
     <application
         android:allowBackup="true"
@@ -28,6 +35,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ByeDPI"
         tools:targetApi="34">
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+
         <activity
             android:name=".activities.MainActivity"
             android:exported="true">
@@ -44,6 +55,16 @@
             android:name=".activities.SettingsActivity"
             android:label="@string/title_settings"
             android:exported="true"/>
+
+        <activity
+            android:name=".activities.AppSelectActivity"
+            android:exported="false"
+            android:label="@string/split_title" />
+
+        <activity
+            android:name=".activities.StrategyTestActivity"
+            android:exported="false"
+            android:label="@string/st_title" />
 
         <service android:name=".services.ByeDpiVpnService"
             android:permission="android.permission.BIND_VPN_SERVICE"
@@ -79,6 +100,16 @@
                     android:name="android.service.quicksettings.action.QS_TILE"/>
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".services.BootReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

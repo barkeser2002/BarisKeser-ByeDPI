@@ -86,4 +86,47 @@
     <string name="battery_opt_message">Bağlantının ekran kapalıyken ya da uygulama arka plandayken kesilmemesi için ByeDPI\'ı pil optimizasyonundan muaf tutmalısın. Bir sonraki ekranda \"İzin ver\" de.</string>
     <string name="battery_opt_allow">İzin ver</string>
     <string name="battery_opt_later">Daha sonra</string>
+
+    <!-- Theme -->
+    <string name="th_connection_label">BAĞLANTI DURUMU</string>
+
+    <!-- Startup -->
+    <string name="boot_category">Açılış</string>
+    <string name="boot_title">Açılışta otomatik bağlan</string>
+    <string name="boot_summary">Telefon açıldığında seçili modla otomatik bağlanır. VPN modu için VPN izninin daha önce verilmiş olması gerekir.</string>
+
+    <!-- Split tunnel -->
+    <string name="split_title">Muaf uygulamalar</string>
+    <string name="split_summary">Seçili uygulamalar VPN\'yi atlar</string>
+    <string name="split_header_title">VPN dışında bırakılacak uygulamalar</string>
+    <string name="split_header_body">İşaretli uygulamalar trafiğini VPN üzerinden değil doğrudan internet bağlantısından geçirir.</string>
+    <string name="split_hint">Değişiklikler bir sonraki bağlantıda uygulanır.</string>
+    <string name="split_search_hint">Uygulama ara</string>
+    <string name="split_empty">Uygulama bulunamadı</string>
+
+    <!-- Strategy test -->
+    <string name="st_title">Otomatik strateji testi</string>
+    <string name="st_summary">En hızlı çalışan komut satırı stratejisini bul</string>
+    <string name="st_hint">Bağlantı kapalıyken bir siteye erişimi her strateji için test eder ve en hızlı çalışanı bulur.</string>
+    <string name="st_host_hint">Test edilecek site</string>
+    <string name="st_host_required">Lütfen bir site adresi girin</string>
+    <string name="st_start">Testi başlat</string>
+    <string name="st_stop">Testi durdur</string>
+    <string name="st_blocked">Test için önce bağlantıyı kapatın</string>
+    <string name="st_idle">Test edilmeye hazır</string>
+    <string name="st_stopping">Durduruluyor...</string>
+    <string name="st_done">Test tamamlandı</string>
+    <string name="st_no_success">Çalışan strateji bulunamadı</string>
+    <string name="st_cancelled">Test durduruldu</string>
+    <string name="st_testing">Test ediliyor...</string>
+    <string name="st_testing_name">Test ediliyor: %1$s</string>
+    <string name="st_pending">Bekleniyor</string>
+    <string name="st_latency">%1$d ms</string>
+    <string name="st_failed">başarısız</string>
+    <string name="st_timeout">zaman aşımı</string>
+    <string name="st_progress">%1$d / %2$d</string>
+    <string name="st_best_badge">EN İYİ</string>
+    <string name="st_apply">En iyi stratejiyi uygula</string>
+    <string name="st_applied">%1$s uygulandı</string>
+    <string name="st_extra_name">Ek strateji %1$d</string>
 </resources>

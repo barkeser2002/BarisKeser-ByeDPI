@@ -86,4 +86,47 @@
     <string name="battery_opt_message">To stop the connection from dropping when the screen is off or the app is in the background, exempt ByeDPI from battery optimization. Tap \"Allow\" on the next screen.</string>
     <string name="battery_opt_allow">Allow</string>
     <string name="battery_opt_later">Later</string>
+
+    <!-- Theme -->
+    <string name="th_connection_label">CONNECTION STATUS</string>
+
+    <!-- Startup -->
+    <string name="boot_category">Startup</string>
+    <string name="boot_title">Connect on startup</string>
+    <string name="boot_summary">Connects automatically with the selected mode when the phone starts. VPN mode requires VPN permission to be granted beforehand.</string>
+
+    <!-- Split tunnel -->
+    <string name="split_title">Excluded apps</string>
+    <string name="split_summary">Selected apps bypass the VPN</string>
+    <string name="split_header_title">Apps to bypass the VPN</string>
+    <string name="split_header_body">Checked apps send their traffic directly to the internet instead of through the VPN.</string>
+    <string name="split_hint">Changes take effect on the next connection.</string>
+    <string name="split_search_hint">Search apps</string>
+    <string name="split_empty">No apps found</string>
+
+    <!-- Strategy test -->
+    <string name="st_title">Automatic strategy test</string>
+    <string name="st_summary">Find the fastest working command-line strategy</string>
+    <string name="st_hint">With the connection off, tests each strategy against a site and finds the fastest one that works.</string>
+    <string name="st_host_hint">Site to test</string>
+    <string name="st_host_required">Please enter a site address</string>
+    <string name="st_start">Start test</string>
+    <string name="st_stop">Stop test</string>
+    <string name="st_blocked">Disconnect first to run the test</string>
+    <string name="st_idle">Ready to test</string>
+    <string name="st_stopping">Stopping...</string>
+    <string name="st_done">Test finished</string>
+    <string name="st_no_success">No working strategy found</string>
+    <string name="st_cancelled">Test stopped</string>
+    <string name="st_testing">Testing...</string>
+    <string name="st_testing_name">Testing: %1$s</string>
+    <string name="st_pending">Waiting</string>
+    <string name="st_latency">%1$d ms</string>
+    <string name="st_failed">failed</string>
+    <string name="st_timeout">timed out</string>
+    <string name="st_progress">%1$d / %2$d</string>
+    <string name="st_best_badge">BEST</string>
+    <string name="st_apply">Apply best strategy</string>
+    <string name="st_applied">%1$s applied</string>
+    <string name="st_extra_name">Extra strategy %1$d</string>
 </resources>
