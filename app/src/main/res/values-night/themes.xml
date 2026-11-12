@@ -15,8 +15,6 @@
         <item name="colorControlActivated">@color/th_red</item>
         <item name="android:colorBackground">@color/th_bg</item>
         <item name="android:windowBackground">@color/th_bg</item>
-        <item name="android:statusBarColor">@color/th_bg</item>
-        <item name="android:navigationBarColor">@color/th_bg</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:textColorPrimary">@color/th_text1</item>
         <item name="android:textColorSecondary">@color/th_text2</item>
