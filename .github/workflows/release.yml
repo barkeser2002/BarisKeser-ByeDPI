@@ -120,5 +120,5 @@ jobs:
           else
             gh release create "$TAG" \
               "${{ steps.out.outputs.apk }}" "${{ steps.out.outputs.aab }}" \
-              --title "BarisKeser-ByeDPI $TAG" --generate-notes --target "${GITHUB_SHA}"
+              --title "ByeDPI $TAG" --generate-notes --target "${GITHUB_SHA}"
           fi
