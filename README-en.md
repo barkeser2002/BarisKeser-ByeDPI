@@ -10,6 +10,10 @@
 
 Android app that bypasses **DPI (Deep Packet Inspection)** and censorship — with no remote server. It runs the [ByeDPI](https://github.com/hufrea/byedpi) engine (**v0.17.3**) as a local SOCKS5 proxy on your device and, in VPN mode, routes traffic through it using Android's on-device VPN. Nothing is sent to a remote VPN server, your traffic is not proxied off-device, and your IP is not hidden — only the way the first packets of a connection are sent is changed so DPI systems cannot easily block them.
 
+This app uses Android's VpnService API to route traffic through a local proxy that runs on your device. No traffic is sent to a developer or third-party VPN server, and no browsing data is collected.
+
+Privacy policy: [docs/index.html](https://barkeser2002.github.io/BarisKeser-ByeDPI/) (also [PRIVACY.md](PRIVACY.md)).
+
 ## Features
 
 - **VPN mode** (system-wide) or **local SOCKS5 proxy** mode

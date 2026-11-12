@@ -10,9 +10,11 @@
     --primary:#3C52A3; --accent:#FF6A4D; --border:#e6e8ef;
   }
   @media (prefers-color-scheme: dark){
-    :root{ --bg:#0e1016; --card:#161923; --text:#e9ecf5; --muted:#9aa0b4;
+    :root:not([data-theme="light"]){ --bg:#0e1016; --card:#161923; --text:#e9ecf5; --muted:#9aa0b4;
       --primary:#7d94e6; --accent:#FF7A5C; --border:#242838; }
   }
+  :root[data-theme="dark"]{ --bg:#0e1016; --card:#161923; --text:#e9ecf5; --muted:#9aa0b4;
+    --primary:#7d94e6; --accent:#FF7A5C; --border:#242838; }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
@@ -24,19 +26,21 @@
     color:#fff;font-weight:800;font-size:20px;}
   h1{font-size:22px;margin:0;}
   .sub{color:var(--muted);font-size:14px;margin-top:2px;}
-  .updated{color:var(--muted);font-size:13px;margin:14px 0 26px;}
+  .meta{color:var(--muted);font-size:13px;margin:14px 0 6px;}
+  .updated{color:var(--muted);font-size:13px;margin:0 0 18px;}
+  .lang-nav{margin:0 0 18px;font-size:14px;}
+  .lang-nav a{color:var(--accent);text-decoration:none;font-weight:700;}
   .card{background:var(--card);border:1px solid var(--border);border-radius:16px;
     padding:22px 24px;margin:18px 0;}
   h2{font-size:19px;margin:0 0 4px;color:var(--primary);}
   h3{font-size:15px;margin:20px 0 6px;}
   p,li{color:var(--text);}
   .muted{color:var(--muted);}
-  .lang-nav{margin:0 0 18px;font-size:14px;}
-  .lang-nav a{color:var(--accent);text-decoration:none;font-weight:700;}
   .highlight{background:linear-gradient(0deg,transparent 60%,rgba(255,106,77,.18) 60%);
     font-weight:700;}
   ul{padding-left:20px;}
-  a{color:var(--accent);}
+  code{word-break:break-word;}
+  a{color:var(--accent);overflow-wrap:anywhere;}
   footer{color:var(--muted);font-size:13px;margin-top:30px;text-align:center;}
   hr{border:none;border-top:1px solid var(--border);margin:40px 0;}
 </style>
@@ -51,7 +55,8 @@
       <div class="sub">Gizlilik Politikası · Privacy Policy</div>
     </div>
   </header>
-  <div class="updated">Son güncelleme / Last updated: 2026-08-25</div>
+  <div class="meta">Geliştirici / Developer: BarisKeser-ByeDPI</div>
+  <div class="updated">Son güncelleme / Last updated: 2026-11-13</div>
   <div class="lang-nav"><a href="#tr">Türkçe</a> · <a href="#en">English</a></div>
 
   <!-- ================= TÜRKÇE ================= -->
@@ -59,51 +64,83 @@
     <div class="card">
       <h2>Gizlilik Politikası</h2>
       <p>BarisKeser-ByeDPI, cihazınızda <strong>yerel</strong> bir SOCKS5 proxy (ByeDPI) ve
-      VPN modunda cihaz-içi bir tünel çalıştırarak Derin Paket İncelemesini (DPI) ve sansürü
-      aşan açık kaynaklı bir araçtır. Bu politika, uygulamanın hangi verileri işlediğini
-      (ve işlemediğini) açıklar.</p>
+      VPN modunda cihaz üzerinde bir tünel çalıştıran, Derin Paket İncelemesini (DPI) ve sansürü
+      aşmaya yardımcı olan açık kaynaklı bir uygulamadır. Bu politika, uygulamanın hangi verileri
+      işlediğini ve işlemediğini açıklar.</p>
 
       <h3>Veri toplama</h3>
-      <p><span class="highlight">Uygulama hiçbir kişisel veriyi toplamaz, saklamaz, iletmez veya paylaşmaz.</span></p>
+      <p><span class="highlight">Uygulama hiçbir kişisel veriyi toplamaz, cihaz dışında saklamaz, iletmez veya paylaşmaz.</span></p>
       <ul>
         <li>Hesap yok, kayıt yok, giriş yok.</li>
-        <li>Analitik yok, reklam yok, takip yok, çökme-raporlama SDK'sı yok.</li>
-        <li>Uygulama, geliştiriciye veya herhangi bir üçüncü taraf sunucuya hiçbir veri göndermez.</li>
+        <li>Analitik yok, reklam yok, takip yok, çökme raporlama SDK'sı yok.</li>
+        <li>Uygulama geliştiriciye veya herhangi bir üçüncü taraf sunucuya hiçbir veri göndermez.</li>
+        <li>Uygulamanın kendi uzak sunucusu yoktur ve hiçbir uzak VPN sunucusuna bağlanmaz.</li>
       </ul>
 
       <h3>VPN izni nasıl kullanılır?</h3>
-      <p>Android'in <code>VpnService</code> API'si <strong>yalnızca</strong> cihazınızın trafiğini,
-      yine kendi cihazınızda (<code>127.0.0.1</code>) çalışan yerel proxy'ye yönlendirmek için
-      kullanılır. Uygulama:</p>
+      <p>Android'in <code>VpnService</code> API'si <strong>yalnızca</strong> cihazınızda bir tünel
+      oluşturmak için kullanılır. Bu tünel, cihazınızın trafiğini yine cihazınızda çalışan yerel
+      proxy'ye (<code>127.0.0.1</code>) yönlendirir. Uygulama:</p>
       <ul>
         <li>Trafiğinizi uzak bir VPN sunucusuna <strong>göndermez</strong>.</li>
-        <li>Trafiğinizi cihaz dışında şifrelemez, proxy'lemez, kaydetmez veya incelemez.</li>
+        <li>Kendi başına trafiğinize şifreleme <strong>eklemez</strong>. Trafik, kullandığınız sitelerin
+        ve servislerin sağladığı şifrelemeyi (örneğin TLS) olduğu gibi korur.</li>
+        <li>Trafiğinizin içeriğini cihaz dışında kaydetmez, saklamaz veya incelemez.</li>
         <li>IP adresinizi gizlemez veya değiştirmez.</li>
       </ul>
-      <p>Tüm işlemler cihazınızda gerçekleşir. Yapılan tek ağ bağlantısı, sizin kendi
-      uygulamalarınızın eriştiği site ve servislere olan bağlantılardır; uygulama yalnızca
-      ilk paketlerin gönderilme biçimini değiştirir; böylece DPI sistemleri kolayca engelleyemez.</p>
+      <p>Tüm işlemler cihazınızda gerçekleşir. Yapılan ağ bağlantıları, yalnızca sizin kendi
+      uygulamalarınızın eriştiği site ve servislere yaptığı bağlantılardır. Uygulama yalnızca bir
+      bağlantının ilk paketlerinin gönderilme biçimini değiştirir; böylece DPI sistemleri bu
+      bağlantıyı kolayca engelleyemez.</p>
+
+      <h3>Yüklü uygulama listesi (uygulama bazlı yönlendirme)</h3>
+      <p>Hangi uygulamaların tünelden geçeceğini seçebilmeniz için uygulama, başlatıcı simgesi
+      olan yüklü uygulamaların listesini okur. Bu liste <strong>yalnızca cihazınızda</strong> okunur,
+      yalnızca seçenekleri göstermek ve dahil/hariç ayarlarınızı uygulamak için kullanılır ve
+      cihaz dışına <strong>iletilmez</strong> veya cihaz dışında saklanmaz.</p>
 
       <h3>İsteğe bağlı DNS ayarı</h3>
       <p>VPN modunda bir DNS sunucusu (varsayılan <code>1.1.1.1</code>) ayarlayabilirsiniz.
-      Ayarlanırsa, tünelden gelen DNS sorguları o sunucuya yönlendirilir. Bu, üçüncü bir tarafça
-      kendi gizlilik politikası altında işletilen standart bir genel DNS çözümleyicidir; uygulamanın
-      kendisi DNS sorgularınızı almaz veya saklamaz.</p>
+      Ayarlanırsa tünelden gelen DNS sorguları o sunucuya yönlendirilir. Bu, üçüncü bir tarafın
+      kendi gizlilik politikası altında işlettiği genel bir DNS çözümleyicidir. Uygulamanın kendisi
+      DNS sorgularınızı almaz, kaydetmez veya saklamaz.</p>
+
+      <h3>Veri saklama ve silme</h3>
+      <ul>
+        <li>Ayarlarınız (seçili mod, strateji, DNS sunucusu, uygulama listesi) ve varsa kayıtlı
+        günlükler yalnızca cihazınızda tutulur.</li>
+        <li>Hiçbir veri sunucuda tutulmaz; dolayısıyla silinmesi istenebilecek bir sunucu kopyası yoktur.</li>
+        <li>Tüm uygulama verilerini silmek için Android Ayarları'ndan uygulamanın depolama alanını
+        temizleyebilir veya uygulamayı kaldırabilirsiniz.</li>
+      </ul>
+
+      <h3>Güvenlik</h3>
+      <p>Kişisel veriler geliştiriciye gönderilmez ve işlemler cihazınızda yapılır. Uygulama veri
+      iletmediği için verilerinizin güvenliği büyük ölçüde cihazınızın güvenliğine bağlıdır. Cihazınızı
+      güncel tutmanızı ve tünelden hangi uygulamaların geçeceğini uygulama ayarlarından kontrol
+      etmenizi öneririz.</p>
 
       <h3>İzinler</h3>
       <ul>
-        <li><code>INTERNET</code> — yerel ağ bağlantıları açmak için.</li>
-        <li><code>FOREGROUND_SERVICE</code> / <code>FOREGROUND_SERVICE_SPECIAL_USE</code> — proxy/VPN
-        etkinken kalıcı bir bildirimle çalışır durumda tutmak için.</li>
-        <li><code>POST_NOTIFICATIONS</code> — çalışma-durumu bildirimini göstermek için.</li>
-        <li><code>BIND_VPN_SERVICE</code> — cihaz-içi VPN tünelini sağlamak için.</li>
+        <li><code>INTERNET</code>: yerel ağ bağlantıları açmak için.</li>
+        <li><code>FOREGROUND_SERVICE</code> / <code>FOREGROUND_SERVICE_SPECIAL_USE</code>: proxy veya VPN'i
+        siz açtığınızda, kalıcı bir bildirimle çalışır durumda tutmak için.</li>
+        <li><code>POST_NOTIFICATIONS</code>: çalışma durumu bildirimini göstermek için (isteğe bağlı; bu izin olmadan da uygulama çalışır).</li>
+        <li><code>RECEIVE_BOOT_COMPLETED</code>: yalnızca otomatik bağlanma seçeneğini açtıysanız, cihaz
+        yeniden başlatıldıktan sonra VPN'i yeniden başlatmak için.</li>
+        <li>Başlatıcı uygulamalarını sorgulama (<code>&lt;queries&gt;</code>): yukarıda açıklandığı gibi,
+        uygulama bazlı yönlendirme için yalnızca cihazınızda kullanılır.</li>
+        <li><code>BIND_VPN_SERVICE</code>: cihaz üzerindeki VPN tünelini sağlamak için. Bu izni sistem
+        yönetir, uygulama değil.</li>
       </ul>
+      <p>Uygulama pil optimizasyonu muafiyeti talep etmez ve fotoğraf, medya dosyası, kişi, konum veya
+      hesap verilerine erişmez.</p>
 
       <h3>Çocuklar</h3>
       <p>Uygulama çocuklara yönelik değildir ve hiç kimseden veri toplamaz.</p>
 
       <h3>Değişiklikler</h3>
-      <p>Bu politikadaki değişiklikler proje deposundaki bu dosyada yayımlanacaktır.</p>
+      <p>Bu politikadaki değişiklikler proje deposundaki bu dosyada ve bu sayfada yayımlanır.</p>
 
       <h3>İletişim</h3>
       <p>Sorular için:
@@ -118,48 +155,75 @@
     <div class="card">
       <h2>Privacy Policy</h2>
       <p>BarisKeser-ByeDPI is an open-source tool that runs a <strong>local</strong> SOCKS5 proxy
-      (ByeDPI) and, in VPN mode, an on-device tunnel to bypass Deep Packet Inspection (DPI) and
+      (ByeDPI) and, in VPN mode, an on-device tunnel to help bypass Deep Packet Inspection (DPI) and
       censorship. This policy explains what data the app does and does not handle.</p>
 
       <h3>Data collection</h3>
-      <p><span class="highlight">The app does not collect, store, transmit, or share any personal data.</span></p>
+      <p><span class="highlight">The app does not collect, store off-device, transmit, or share any personal data.</span></p>
       <ul>
         <li>No accounts, no registration, no login.</li>
         <li>No analytics, no advertising, no tracking, no crash-reporting SDKs.</li>
-        <li>No data is sent to the developer or to any third-party server by the app.</li>
+        <li>The app sends no data to the developer or to any third-party server.</li>
+        <li>The app has no remote server of its own and does not connect to any remote VPN server.</li>
       </ul>
 
       <h3>How the VPN permission is used</h3>
-      <p>Android's <code>VpnService</code> API is used <strong>only</strong> to route your device's
-      traffic through the local proxy running on your own device (<code>127.0.0.1</code>). The app:</p>
+      <p>Android's <code>VpnService</code> API is used <strong>only</strong> to create an on-device tunnel
+      that routes your device's traffic to the local proxy running on your own device (<code>127.0.0.1</code>).
+      The app:</p>
       <ul>
         <li>Does <strong>not</strong> send your traffic to any remote VPN server.</li>
-        <li>Does <strong>not</strong> encrypt, proxy, log, or inspect your traffic off-device.</li>
+        <li>Does <strong>not</strong> add encryption of its own. Traffic keeps whatever encryption the sites and
+        services you use already provide (for example TLS).</li>
+        <li>Does <strong>not</strong> log, store, or inspect the contents of your traffic off-device.</li>
         <li>Does <strong>not</strong> hide or change your IP address.</li>
       </ul>
-      <p>All processing happens locally on your device. The only network connections made are the ones
-      your own apps initiate to the sites and services you use; the app merely alters how the initial
-      packets of a connection are sent so DPI systems cannot easily block them.</p>
+      <p>All processing happens locally on your device. The only network connections made are the ones your
+      own apps initiate to the sites and services you use. The app only alters how the initial packets of a
+      connection are sent so DPI systems cannot easily block it.</p>
+
+      <h3>Installed app list (per-app tunneling)</h3>
+      <p>To let you choose which apps use the tunnel, the app reads the list of installed apps that have a
+      launcher icon. This list is read <strong>only on your device</strong>, is used only to show you the choices
+      and apply your include/exclude settings, and is <strong>never transmitted</strong> or stored off-device.</p>
 
       <h3>Optional DNS setting</h3>
-      <p>In VPN mode you may configure a DNS server (default <code>1.1.1.1</code>). If set, DNS queries
-      from the tunnel are directed to that server — a standard public resolver operated by a third party
-      under its own privacy policy; the app itself does not receive or store your DNS queries.</p>
+      <p>In VPN mode you may configure a DNS server (default <code>1.1.1.1</code>). If set, DNS queries from the
+      tunnel are directed to that server, a standard public resolver operated by a third party under its own
+      privacy policy. The app itself does not receive, log, or store your DNS queries.</p>
+
+      <h3>Data retention and deletion</h3>
+      <ul>
+        <li>Your settings (selected mode, strategy, DNS server, app include/exclude list) and any saved logs are
+        stored only on your device.</li>
+        <li>Nothing is kept on a server, so there is no server-side copy to request deletion of.</li>
+        <li>To remove all app data, clear the app's storage in Android Settings or uninstall the app.</li>
+      </ul>
+
+      <h3>Security</h3>
+      <p>No personal data is sent to the developer, and processing happens on your device. Because the app does
+      not transmit data, the security of your data depends largely on your device. Keep your device updated and
+      use the app's settings to control which apps use the tunnel.</p>
 
       <h3>Permissions</h3>
       <ul>
-        <li><code>INTERNET</code> — to open network connections locally.</li>
-        <li><code>FOREGROUND_SERVICE</code> / <code>FOREGROUND_SERVICE_SPECIAL_USE</code> — to keep the
-        proxy/VPN running while active, with a persistent notification.</li>
-        <li><code>POST_NOTIFICATIONS</code> — to show the running-status notification.</li>
-        <li><code>BIND_VPN_SERVICE</code> — to provide the on-device VPN tunnel.</li>
+        <li><code>INTERNET</code>: to open network connections locally.</li>
+        <li><code>FOREGROUND_SERVICE</code> / <code>FOREGROUND_SERVICE_SPECIAL_USE</code>: to keep the proxy or VPN
+        running while you have turned it on, with a persistent notification.</li>
+        <li><code>POST_NOTIFICATIONS</code>: to show the running-status notification (optional; the app works without it).</li>
+        <li><code>RECEIVE_BOOT_COMPLETED</code>: only if you turn on auto-connect, to restart the VPN after a reboot.</li>
+        <li>Launcher-app query (<code>&lt;queries&gt;</code>): to list installed apps for per-app tunneling, as described
+        above. Used only on your device.</li>
+        <li><code>BIND_VPN_SERVICE</code>: to provide the on-device VPN tunnel. This permission is held by the system, not the app.</li>
       </ul>
+      <p>The app does not request battery-optimization exemptions and does not access photos, media files, contacts,
+      location, or accounts.</p>
 
       <h3>Children</h3>
       <p>The app is not directed at children and collects no data from anyone.</p>
 
       <h3>Changes</h3>
-      <p>Any changes to this policy will be published in this file in the project repository.</p>
+      <p>Any changes to this policy will be published in this file in the project repository and on this page.</p>
 
       <h3>Contact</h3>
       <p>Questions:
