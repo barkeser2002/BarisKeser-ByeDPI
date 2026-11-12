@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <!-- VPN apps are an allowed category for the battery-optimization exemption;
-         without it Doze / OEM task-killers stop the proxy while the app is in the background. -->
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-feature android:name="android.software.leanback"
         android:required="false" />
@@ -33,14 +29,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ByeDPI"
-        tools:targetApi="34">
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
+        android:theme="@style/Theme.ByeDPI">
 
         <activity
             android:name=".activities.MainActivity"
+            android:configChanges="keyboard|keyboardHidden|navigation"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -54,15 +47,18 @@
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_settings"
+            android:configChanges="keyboard|keyboardHidden|navigation"
             android:exported="true"/>
 
         <activity
             android:name=".activities.AppSelectActivity"
+            android:configChanges="keyboard|keyboardHidden|navigation"
             android:exported="false"
             android:label="@string/split_title" />
 
         <activity
             android:name=".activities.StrategyTestActivity"
+            android:configChanges="keyboard|keyboardHidden|navigation"
             android:exported="false"
             android:label="@string/st_title" />
 
@@ -78,7 +74,7 @@
                 android:value="false" />
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="vpn" />
+                android:value="User-initiated on-device VPN (VpnService) that routes device traffic to a local 127.0.0.1 SOCKS5 proxy, which modifies outgoing packets to bypass ISP deep packet inspection. Started and stopped by the user from the app, Quick Settings tile or notification Stop action, and optionally on boot if the user enabled auto-connect. Runs only while enabled; no remote VPN server is used." />
         </service>
 
         <service android:name=".services.ByeDpiProxyService"
@@ -86,7 +82,7 @@
             android:exported="false">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="proxy" />
+                android:value="User-initiated local SOCKS5 proxy on 127.0.0.1 that modifies outgoing packets to bypass ISP deep packet inspection for apps the user configures to use it. Started and stopped by the user; runs only while enabled." />
         </service>
 
         <service

@@ -3,6 +3,7 @@ package com.bariskeser.byedpi.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -17,6 +18,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -25,8 +28,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.bariskeser.byedpi.BuildConfig
 import com.bariskeser.byedpi.R
+import com.bariskeser.byedpi.core.StrategyTestGate
 import com.bariskeser.byedpi.data.*
 import com.bariskeser.byedpi.databinding.ActivityMainBinding
+import com.bariskeser.byedpi.fragments.VpnDisclosureDialogFragment
 import com.bariskeser.byedpi.services.ServiceManager
 import com.bariskeser.byedpi.services.appStatus
 import com.bariskeser.byedpi.utility.*
@@ -40,6 +45,9 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private val TAG: String = MainActivity::class.java.simpleName
+
+        private const val PRIVACY_URL = "https://barkeser2002.github.io/BarisKeser-ByeDPI/"
+        private const val DISCLOSURE_TAG = "vpn_disclosure"
 
         private fun collectLogs(): String? =
             try {
@@ -56,12 +64,24 @@ class MainActivity : AppCompatActivity() {
     private val vpnRegister =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
-                ServiceManager.start(this, Mode.VPN)
+                startTunnel(Mode.VPN)
             } else {
                 Toast.makeText(this, R.string.vpn_permission_denied, Toast.LENGTH_SHORT).show()
                 updateStatus()
             }
         }
+
+    /**
+     * The notification permission is requested in context, right before the tunnel
+     * starts. The tunnel starts whether or not the user grants it.
+     */
+    private val notifPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            launchService()
+        }
+
+    /** True while the battery prompt is on screen, so a second STARTED does not open another. */
+    private var batteryPromptShowing = false
 
     private val logsRegister =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -111,7 +131,15 @@ class MainActivity : AppCompatActivity() {
             }
 
             when (val action = intent.action) {
-                STARTED_BROADCAST,
+                STARTED_BROADCAST -> {
+                    updateStatus()
+                    // Only once the service reports it is running, so a failed start
+                    // never shows the battery prompt.
+                    if (appStatus.first == AppStatus.Running) {
+                        maybePromptBatteryOptimization()
+                    }
+                }
+
                 STOPPED_BROADCAST -> updateStatus()
 
                 FAILED_BROADCAST -> {
@@ -131,10 +159,28 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         // The app is always dark; set before the activity is created so it takes effect.
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        // Light bar icons on the dark background regardless of the system light/dark setting.
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+        )
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Registered on every creation so the result still arrives after a rotation.
+        supportFragmentManager.setFragmentResultListener(
+            VpnDisclosureDialogFragment.REQUEST_KEY,
+            this,
+        ) { _, bundle ->
+            if (bundle.getBoolean(VpnDisclosureDialogFragment.RESULT_ACCEPTED)) {
+                proceedStart()
+            } else {
+                Toast.makeText(this, R.string.vpn_disclosure_declined_hint, Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
 
         val intentFilter = IntentFilter().apply {
             addAction(STARTED_BROADCAST)
@@ -165,6 +211,10 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+        // The selection is restored after onCreate, so read it once the view is laid out.
+        binding.bottomNav.post {
+            showSection(binding.bottomNav.selectedItemId != R.id.nav_about)
+        }
 
         binding.aboutVersion.text = BuildConfig.VERSION_NAME
         binding.aboutSource.setOnClickListener {
@@ -173,14 +223,8 @@ class MainActivity : AppCompatActivity() {
         binding.aboutDocs.setOnClickListener {
             openUrl(getString(R.string.byedpi_docs))
         }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+        binding.aboutPrivacy.setOnClickListener {
+            openUrl(PRIVACY_URL)
         }
     }
 
@@ -230,45 +274,105 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Entry point of the Connect button. VPN mode needs the in-app disclosure to be
+     * accepted first. Proxy mode starts directly.
+     */
     private fun start() {
-        maybePromptBatteryOptimization()
+        if (getPreferences().mode() == Mode.VPN && !hasVpnConsent()) {
+            showVpnDisclosure()
+            return
+        }
+        proceedStart()
+    }
+
+    private fun showVpnDisclosure() {
+        if (supportFragmentManager.findFragmentByTag(DISCLOSURE_TAG) != null) return
+        VpnDisclosureDialogFragment.newInstance(review = false)
+            .show(supportFragmentManager, DISCLOSURE_TAG)
+    }
+
+    /**
+     * Asks for the notification permission in context (Android 13+), then starts the
+     * tunnel. Rationale is shown only when the system asks for it.
+     */
+    private fun proceedStart() {
+        if (!needsNotificationPermission()) {
+            launchService()
+            return
+        }
+
+        if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+            AlertDialog.Builder(this)
+                .setTitle(R.string.notif_rationale_title)
+                .setMessage(R.string.notif_rationale_text)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    notifPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                .setNegativeButton(android.R.string.cancel) { _, _ -> launchService() }
+                .setOnCancelListener { launchService() }
+                .show()
+        } else {
+            notifPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    private fun needsNotificationPermission(): Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+
+    private fun launchService() {
         when (getPreferences().mode()) {
             Mode.VPN -> {
                 val intentPrepare = VpnService.prepare(this)
                 if (intentPrepare != null) {
                     vpnRegister.launch(intentPrepare)
                 } else {
-                    ServiceManager.start(this, Mode.VPN)
+                    startTunnel(Mode.VPN)
                 }
             }
 
-            Mode.Proxy -> ServiceManager.start(this, Mode.Proxy)
+            Mode.Proxy -> startTunnel(Mode.Proxy)
         }
     }
 
+    private fun startTunnel(mode: Mode) {
+        if (!ServiceManager.start(this, mode)) {
+            if (StrategyTestGate.isActive) {
+                Toast.makeText(this, R.string.service_blocked_by_test, Toast.LENGTH_SHORT).show()
+            }
+            updateStatus()
+        }
+        // The battery prompt is shown from the STARTED broadcast, not here.
+    }
+
     /**
-     * Keeps the tunnel alive in the background by asking, once, for the
-     * battery-optimization exemption. Without it Doze and OEM task-killers freeze
-     * the foreground service after the app leaves the screen. If the user declines
-     * we remember that and don't ask again.
+     * Offers, once, to open the battery optimization settings. The prompt is for
+     * phones whose manufacturer restricts background apps aggressively. It is not
+     * needed on most devices. It is shown only after the tunnel is running, and
+     * "Later" or dismissing it is remembered, so it is not asked again.
      */
     private fun maybePromptBatteryOptimization() {
-        // The battery-optimization APIs are only available from API 23.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        if (batteryPromptShowing) return
         val preferences = getPreferences()
         if (preferences.getBoolean("battery_opt_prompted", false)) return
         if (isIgnoringBatteryOptimizations(this)) return
 
+        batteryPromptShowing = true
         AlertDialog.Builder(this)
             .setTitle(R.string.battery_opt_title)
             .setMessage(R.string.battery_opt_message)
             .setPositiveButton(R.string.battery_opt_allow) { _, _ ->
                 preferences.edit().putBoolean("battery_opt_prompted", true).apply()
-                requestIgnoreBatteryOptimizations(this)
+                openBatteryOptimizationSettings(this)
             }
             .setNegativeButton(R.string.battery_opt_later) { _, _ ->
                 preferences.edit().putBoolean("battery_opt_prompted", true).apply()
             }
+            .setOnDismissListener { batteryPromptShowing = false }
             .show()
     }
 

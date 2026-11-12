@@ -10,6 +10,10 @@
 
 **DPI (Derin Paket İncelemesi)** ve sansürü — uzak sunucuya gerek olmadan — aşan Android uygulaması. Cihazında [ByeDPI](https://github.com/hufrea/byedpi) motorunu (**v0.17.3**) yerel bir SOCKS5 proxy olarak çalıştırır ve VPN modunda trafiği Android'in cihaz-içi VPN'i üzerinden bu proxy'ye yönlendirir. Hiçbir veri uzak bir VPN sunucusuna gönderilmez, trafik cihaz dışında proxy'lenmez ve IP'niz gizlenmez — yalnızca bağlantının ilk paketlerinin gönderilme biçimi değiştirilir; böylece DPI sistemleri kolayca engelleyemez.
 
+Bu uygulama, Android'in VpnService API'sini kullanarak cihazınızdaki yerel bir proxy üzerinden trafiği yönlendirir. Hiçbir trafik geliştiriciye veya üçüncü taraf bir VPN sunucusuna gönderilmez ve hiçbir tarayıcı verisi toplanmaz.
+
+Gizlilik politikası: [docs/index.html](https://barkeser2002.github.io/BarisKeser-ByeDPI/) (ayrıca [PRIVACY.md](PRIVACY.md)).
+
 ## Özellikler
 
 - **VPN modu** (sistem geneli) veya **yerel SOCKS5 proxy** modu

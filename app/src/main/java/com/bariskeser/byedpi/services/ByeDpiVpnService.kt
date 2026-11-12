@@ -4,9 +4,11 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import androidx.core.app.ServiceCompat
 import androidx.lifecycle.lifecycleScope
 import com.bariskeser.byedpi.R
 import com.bariskeser.byedpi.activities.MainActivity
@@ -52,21 +54,32 @@ class ByeDpiVpnService : LifecycleVpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         return when (val action = intent?.action) {
-            START_ACTION -> {
+            START_ACTION, VpnService.SERVICE_INTERFACE, null -> {
                 // Must be called for every startForegroundService() delivery (API 26+).
-                startForeground()
-                lifecycleScope.launch { start() }
-                START_STICKY
+                startForegroundCompat()
+                // Every start is checked: the disclosure consent and the system VPN
+                // permission. Sticky restarts and system starts can arrive without them,
+                // and a withdrawal can race an app start, so no start may skip the check.
+                val startAllowed = hasVpnConsent() && VpnService.prepare(this) == null
+                if (startAllowed) {
+                    lifecycleScope.launch { start() }
+                    START_STICKY
+                } else {
+                    Log.w(TAG, "VPN consent not granted, not starting")
+                    stopSelf(startId)
+                    START_NOT_STICKY
+                }
             }
 
             STOP_ACTION -> {
-                startForeground()
+                startForegroundCompat()
                 lifecycleScope.launch { stop() }
                 START_NOT_STICKY
             }
 
             else -> {
                 Log.w(TAG, "Unknown action: $action")
+                stopSelf(startId)
                 START_NOT_STICKY
             }
         }
@@ -98,17 +111,13 @@ class ByeDpiVpnService : LifecycleVpnService() {
         }
     }
 
-    private fun startForeground() {
-        val notification: Notification = createNotification()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(
-                FOREGROUND_SERVICE_ID,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
-            )
-        } else {
-            startForeground(FOREGROUND_SERVICE_ID, notification)
-        }
+    private fun startForegroundCompat() {
+        ServiceCompat.startForeground(
+            this,
+            FOREGROUND_SERVICE_ID,
+            createNotification(),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+        )
     }
 
     private suspend fun stop() {
@@ -161,17 +170,21 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private suspend fun stopProxy() {
         Log.i(TAG, "Stopping proxy")
 
-        if (status == ServiceStatus.Disconnected) {
-            Log.w(TAG, "Proxy already disconnected")
+        // No job means no proxy was started by this service (or it is already stopped).
+        // Do not touch the native state then: forceClose would act on a stale descriptor.
+        val job = proxyJob
+        if (job == null || status == ServiceStatus.Disconnected) {
+            Log.w(TAG, "Proxy not running, nothing to stop")
+            proxyJob = null
             return
         }
 
         byeDpiProxy.stopProxy()
-        val joined = withTimeoutOrNull(3000) { proxyJob?.join() }
+        val joined = withTimeoutOrNull(3000) { job.join() }
         if (joined == null) {
             Log.w(TAG, "join timeout, force closing")
             byeDpiProxy.forceClose()
-            proxyJob?.join()
+            job.join()
         }
         proxyJob = null
 
@@ -251,11 +264,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
             when (newStatus) {
                 ServiceStatus.Connected -> AppStatus.Running
 
+                // proxyJob is kept here on purpose: stopProxy() joins it. Clearing it
+                // on Failed made a failed start skip the join and force-close the proxy.
                 ServiceStatus.Disconnected,
-                ServiceStatus.Failed -> {
-                    proxyJob = null
-                    AppStatus.Halted
-                }
+                ServiceStatus.Failed -> AppStatus.Halted
             },
             Mode.VPN
         )
@@ -283,7 +295,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private fun createBuilder(dns: String, ipv6: Boolean): Builder {
         Log.d(TAG, "DNS: $dns")
         val builder = Builder()
-        builder.setSession("BarisKeser-ByeDPI")
+        builder.setSession("ByeDPI")
         builder.setConfigureIntent(
             PendingIntent.getActivity(
                 this,

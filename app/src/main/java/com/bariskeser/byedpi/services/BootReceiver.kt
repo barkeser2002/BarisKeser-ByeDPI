@@ -7,6 +7,7 @@ import android.net.VpnService
 import android.util.Log
 import com.bariskeser.byedpi.data.Mode
 import com.bariskeser.byedpi.utility.getPreferences
+import com.bariskeser.byedpi.utility.hasVpnConsent
 import com.bariskeser.byedpi.utility.mode
 
 /**
@@ -33,10 +34,13 @@ class BootReceiver : BroadcastReceiver() {
         try {
             when (prefs.mode()) {
                 Mode.VPN -> {
-                    if (VpnService.prepare(context) == null) {
+                    if (context.hasVpnConsent() && VpnService.prepare(context) == null) {
                         ServiceManager.start(context, Mode.VPN)
                     } else {
-                        Log.w(TAG, "VPN permission not granted, skipping auto-connect on boot")
+                        Log.w(
+                            TAG,
+                            "VPN disclosure not accepted or VPN permission not granted, skipping auto-connect on boot"
+                        )
                     }
                 }
 

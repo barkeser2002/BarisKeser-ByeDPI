@@ -110,11 +110,18 @@
         <Preference
             android:key="source_code"
             android:icon="@drawable/ic_github_36"
-            android:title="@string/source_code_link">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/barkeser2002/BarisKeser-ByeDPI" />
-        </Preference>
+            android:title="@string/source_code_link" />
+
+        <Preference
+            android:key="privacy_policy"
+            android:icon="@drawable/ic_pref_info"
+            android:title="@string/privacy_policy" />
+
+        <Preference
+            android:key="vpn_disclosure"
+            android:icon="@drawable/ic_pref_shield"
+            android:title="@string/pref_vpn_disclosure_title"
+            android:summary="@string/pref_vpn_disclosure_summary" />
 
     </androidx.preference.PreferenceCategory>
 

@@ -39,7 +39,9 @@ jobs:
             NAME="${MA}.${MI}.${PA}"
             TAG="v${NAME}"
           fi
-          CODE="${GITHUB_RUN_NUMBER}"
+          # GITHUB_RUN_NUMBER is only a per-workflow counter. The offset keeps the code
+          # above any versionCode already uploaded to Play, which Play requires to increase.
+          CODE=$((100 + GITHUB_RUN_NUMBER))
           echo "tag=$TAG"   >> "$GITHUB_OUTPUT"
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "code=$CODE" >> "$GITHUB_OUTPUT"
@@ -49,17 +51,17 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
           packages: 'platform-tools'
 
-      - name: Install NDK r27, CMake and SDK 36
+      - name: Install NDK r28, CMake and SDK 36
         run: |
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;28.2.13676358" "cmake;3.22.1"
 
       - name: Decode signing keystore
         env:

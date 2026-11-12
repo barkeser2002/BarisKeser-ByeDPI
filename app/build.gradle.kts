@@ -7,17 +7,18 @@ android {
     namespace = "com.bariskeser.byedpi"
     compileSdk = 36
 
-    // Pin an NDK that aligns native libraries to 16 KB pages by default (r27+).
     // Google Play requires 16 KB page-size support for apps with native code
-    // targeting Android 15+ (API 35+). Both build systems (CMake and ndk-build)
-    // resolve their toolchain from this version.
-    ndkVersion = "27.2.12479018"
+    // targeting Android 15+ (API 35+). r28+ aligns to 16 KB by default; the
+    // explicit linker flags (see Application.mk / CMakeLists.txt) are kept as a
+    // safeguard. Both build systems (CMake and ndk-build) resolve their toolchain
+    // from this version.
+    ndkVersion = "28.2.13676358"
 
     defaultConfig {
         applicationId = "com.bariskeser.byedpi"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 36
-        versionCode = (findProperty("appVersionCode") as String?)?.toIntOrNull() ?: 13
+        versionCode = (findProperty("appVersionCode") as String?)?.toIntOrNull() ?: 14
         versionName = (findProperty("appVersionName") as String?) ?: "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -68,9 +69,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
@@ -90,18 +88,26 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
+    }
+}
+
 dependencies {
-    implementation("androidx.fragment:fragment-ktx:1.8.2")
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.fragment:fragment-ktx:1.9.1")
+    implementation("androidx.core:core-ktx:1.17.0")
+    implementation("androidx.appcompat:appcompat:1.8.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("com.takisoft.preferencex:preferencex:1.1.0")
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
-    implementation("androidx.lifecycle:lifecycle-service:2.8.4")
+    implementation("com.google.android.material:material:1.14.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-service:2.11.0")
+    implementation("androidx.activity:activity-ktx:1.13.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 }
 
 tasks.register<Exec>("runNdkBuild") {
