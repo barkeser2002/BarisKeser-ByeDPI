@@ -33,7 +33,7 @@
     <style name="TextAppearance.ByeDPI.ActionBarTitle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textSize">22sp</item>
         <item name="android:textColor">@color/th_text1</item>
-        <item name="android:fontFamily">@font/grenze_gotisch</item>
-        <item name="fontFamily">@font/grenze_gotisch</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textStyle">bold</item>
     </style>
 </resources>

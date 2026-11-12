@@ -31,14 +31,13 @@
             android:layout_marginStart="14dp"
             android:orientation="vertical">
 
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textSize="22sp"
-                android:textColor="@color/th_text1"
-                android:fontFamily="@font/grenze_gotisch"
-                app:fontFamily="@font/grenze_gotisch" />
+                android:layout_height="26dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitStart"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/wordmark_byedpi" />
 
             <TextView
                 android:id="@+id/settings_version"
