@@ -80,4 +80,10 @@
     <string name="about_tagline">Bypass DPI and censorship</string>
     <string name="active_preset_label">Active preset</string>
     <string name="about_engine">Engine: ByeDPI v0.17.3</string>
+
+    <!-- Battery optimization prompt -->
+    <string name="battery_opt_title">Keep running in the background</string>
+    <string name="battery_opt_message">To stop the connection from dropping when the screen is off or the app is in the background, exempt ByeDPI from battery optimization. Tap \"Allow\" on the next screen.</string>
+    <string name="battery_opt_allow">Allow</string>
+    <string name="battery_opt_later">Later</string>
 </resources>

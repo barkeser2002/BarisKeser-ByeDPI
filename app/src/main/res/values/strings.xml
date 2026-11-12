@@ -80,4 +80,10 @@
     <string name="about_tagline">DPI ve sansürü aş</string>
     <string name="active_preset_label">Aktif preset</string>
     <string name="about_engine">Motor: ByeDPI v0.17.3</string>
+
+    <!-- Battery optimization prompt -->
+    <string name="battery_opt_title">Arka planda çalışmaya devam etsin</string>
+    <string name="battery_opt_message">Bağlantının ekran kapalıyken ya da uygulama arka plandayken kesilmemesi için ByeDPI\'ı pil optimizasyonundan muaf tutmalısın. Bir sonraki ekranda \"İzin ver\" de.</string>
+    <string name="battery_opt_allow">İzin ver</string>
+    <string name="battery_opt_later">Daha sonra</string>
 </resources>

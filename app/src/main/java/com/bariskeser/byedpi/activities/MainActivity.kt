@@ -18,6 +18,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -229,6 +230,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun start() {
+        maybePromptBatteryOptimization()
         when (getPreferences().mode()) {
             Mode.VPN -> {
                 val intentPrepare = VpnService.prepare(this)
@@ -241,6 +243,30 @@ class MainActivity : AppCompatActivity() {
 
             Mode.Proxy -> ServiceManager.start(this, Mode.Proxy)
         }
+    }
+
+    /**
+     * Keeps the tunnel alive in the background by asking, once, for the
+     * battery-optimization exemption. Without it Doze and OEM task-killers freeze
+     * the foreground service after the app leaves the screen. If the user declines
+     * we remember that and don't ask again.
+     */
+    private fun maybePromptBatteryOptimization() {
+        val preferences = getPreferences()
+        if (preferences.getBoolean("battery_opt_prompted", false)) return
+        if (isIgnoringBatteryOptimizations(this)) return
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.battery_opt_title)
+            .setMessage(R.string.battery_opt_message)
+            .setPositiveButton(R.string.battery_opt_allow) { _, _ ->
+                preferences.edit().putBoolean("battery_opt_prompted", true).apply()
+                requestIgnoreBatteryOptimizations(this)
+            }
+            .setNegativeButton(R.string.battery_opt_later) { _, _ ->
+                preferences.edit().putBoolean("battery_opt_prompted", true).apply()
+            }
+            .show()
     }
 
     private fun stop() {
