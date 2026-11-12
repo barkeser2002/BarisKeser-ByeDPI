@@ -272,6 +272,20 @@
                     app:strokeWidth="1dp"
                     app:iconTint="@color/th_text1"
                     app:icon="@drawable/ic_pref_code" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/about_privacy"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textAllCaps="false"
+                    android:text="@string/privacy_policy"
+                    android:textColor="@color/th_text1"
+                    app:strokeColor="@color/th_text3"
+                    app:strokeWidth="1dp"
+                    app:iconTint="@color/th_text1"
+                    app:icon="@drawable/ic_pref_info" />
             </LinearLayout>
         </ScrollView>
     </FrameLayout>
