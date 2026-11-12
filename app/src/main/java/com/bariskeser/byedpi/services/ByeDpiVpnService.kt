@@ -4,9 +4,11 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import androidx.core.app.ServiceCompat
 import androidx.lifecycle.lifecycleScope
 import com.bariskeser.byedpi.R
 import com.bariskeser.byedpi.activities.MainActivity
@@ -52,21 +54,31 @@ class ByeDpiVpnService : LifecycleVpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         return when (val action = intent?.action) {
-            START_ACTION -> {
+            START_ACTION, VpnService.SERVICE_INTERFACE, null -> {
                 // Must be called for every startForegroundService() delivery (API 26+).
-                startForeground()
-                lifecycleScope.launch { start() }
-                START_STICKY
+                startForegroundCompat()
+                // App-initiated starts are only sent after consent. System and sticky
+                // restarts may arrive without it, so check before establishing the tunnel.
+                val startAllowed = action == START_ACTION || VpnService.prepare(this) == null
+                if (startAllowed) {
+                    lifecycleScope.launch { start() }
+                    START_STICKY
+                } else {
+                    Log.w(TAG, "VPN consent not granted, not starting")
+                    stopSelf(startId)
+                    START_NOT_STICKY
+                }
             }
 
             STOP_ACTION -> {
-                startForeground()
+                startForegroundCompat()
                 lifecycleScope.launch { stop() }
                 START_NOT_STICKY
             }
 
             else -> {
                 Log.w(TAG, "Unknown action: $action")
+                stopSelf(startId)
                 START_NOT_STICKY
             }
         }
@@ -98,17 +110,13 @@ class ByeDpiVpnService : LifecycleVpnService() {
         }
     }
 
-    private fun startForeground() {
-        val notification: Notification = createNotification()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(
-                FOREGROUND_SERVICE_ID,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
-            )
-        } else {
-            startForeground(FOREGROUND_SERVICE_ID, notification)
-        }
+    private fun startForegroundCompat() {
+        ServiceCompat.startForeground(
+            this,
+            FOREGROUND_SERVICE_ID,
+            createNotification(),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+        )
     }
 
     private suspend fun stop() {
