@@ -20,12 +20,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.bariskeser.byedpi.BuildConfig
 import com.bariskeser.byedpi.R
 import com.bariskeser.byedpi.data.*
-import com.bariskeser.byedpi.fragments.MainSettingsFragment
 import com.bariskeser.byedpi.databinding.ActivityMainBinding
 import com.bariskeser.byedpi.services.ServiceManager
 import com.bariskeser.byedpi.services.appStatus
@@ -126,6 +126,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // The app is always dark; set before the activity is created so it takes effect.
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -168,10 +170,6 @@ class MainActivity : AppCompatActivity() {
         binding.aboutDocs.setOnClickListener {
             openUrl(getString(R.string.byedpi_docs))
         }
-
-        val theme = getPreferences()
-            .getString("app_theme", null)
-        MainSettingsFragment.setTheme(theme ?: "system")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(
@@ -302,7 +300,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 binding.statusButton.isEnabled = true
-                setStateColors(R.color.connect_button, R.color.dot_idle)
+                setStateColors(connected = false)
             }
 
             AppStatus.Running -> {
@@ -318,16 +316,36 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 binding.statusButton.isEnabled = true
-                setStateColors(R.color.disconnect_button, R.color.dot_active)
+                setStateColors(connected = true)
             }
         }
     }
 
-    private fun setStateColors(buttonColor: Int, dotColor: Int) {
+    /**
+     * Disconnected: red button with white text, grey ring and dot.
+     * Connected: dark button with soft red text, green ring and dot.
+     */
+    private fun setStateColors(connected: Boolean) {
+        val buttonColor: Int
+        val textColor: Int
+        val accentColor: Int
+        if (connected) {
+            buttonColor = R.color.th_connected_button
+            textColor = R.color.th_red_soft
+            accentColor = R.color.th_green
+        } else {
+            buttonColor = R.color.th_red
+            textColor = R.color.white
+            accentColor = R.color.th_text3
+        }
+
         binding.statusButton.backgroundTintList =
             ColorStateList.valueOf(ContextCompat.getColor(this, buttonColor))
+        binding.statusButton.setTextColor(ContextCompat.getColor(this, textColor))
+        binding.statusRing.backgroundTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(this, accentColor))
         binding.statusDot.backgroundTintList =
-            ColorStateList.valueOf(ContextCompat.getColor(this, dotColor))
+            ColorStateList.valueOf(ContextCompat.getColor(this, accentColor))
     }
 
     private fun showSection(home: Boolean) {
