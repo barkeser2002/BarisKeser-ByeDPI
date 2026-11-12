@@ -98,15 +98,19 @@ class StrategyTestActivity : AppCompatActivity() {
 
         val fromPresets = presetArgs.mapIndexed { index, args ->
             StrategyCandidate(
-                name = presetNames.getOrElse(index) { getString(R.string.st_extra_name, index + 1) },
+                name = presetNames.getOrElse(index) { extraStrategyName(index + 1) },
                 args = args.trim(),
             )
         }
         val extras = EXTRA_ARGS.mapIndexed { index, args ->
-            StrategyCandidate(name = getString(R.string.st_extra_name, index + 1), args = args)
+            StrategyCandidate(name = extraStrategyName(index + 1), args = args)
         }
         return (fromPresets + extras).distinctBy { it.args }
     }
+
+    /** Formats the numbered fallback name, e.g. "Extra strategy 2". */
+    private fun extraStrategyName(number: Int): String =
+        getString(R.string.st_extra_name, number)
 
     private fun startTest() {
         val host = normalizeHost(binding.hostInput.text?.toString().orEmpty())
