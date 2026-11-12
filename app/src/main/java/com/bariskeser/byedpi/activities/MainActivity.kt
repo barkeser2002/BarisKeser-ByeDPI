@@ -3,6 +3,7 @@ package com.bariskeser.byedpi.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -17,6 +18,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -157,7 +159,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         // The app is always dark; set before the activity is created so it takes effect.
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        enableEdgeToEdge()
+        // Light bar icons on the dark background regardless of the system light/dark setting.
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+        )
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)

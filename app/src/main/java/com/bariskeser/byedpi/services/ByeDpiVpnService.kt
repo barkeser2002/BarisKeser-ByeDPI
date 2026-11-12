@@ -295,7 +295,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private fun createBuilder(dns: String, ipv6: Boolean): Builder {
         Log.d(TAG, "DNS: $dns")
         val builder = Builder()
-        builder.setSession("BarisKeser-ByeDPI")
+        builder.setSession("ByeDPI")
         builder.setConfigureIntent(
             PendingIntent.getActivity(
                 this,
