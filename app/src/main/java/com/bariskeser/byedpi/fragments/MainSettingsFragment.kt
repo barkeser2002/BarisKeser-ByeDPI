@@ -2,7 +2,6 @@ package com.bariskeser.byedpi.fragments
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import com.bariskeser.byedpi.BuildConfig
@@ -12,21 +11,13 @@ import com.bariskeser.byedpi.utility.*
 
 class MainSettingsFragment : PreferenceFragmentCompat() {
     companion object {
-        private val TAG: String = MainSettingsFragment::class.java.simpleName
-
-        fun setTheme(name: String) =
-            themeByName(name)?.let {
-                AppCompatDelegate.setDefaultNightMode(it)
-            } ?: throw IllegalStateException("Invalid value for app_theme: $name")
-
-        private fun themeByName(name: String): Int? = when (name) {
-            "system" -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            "light" -> AppCompatDelegate.MODE_NIGHT_NO
-            "dark" -> AppCompatDelegate.MODE_NIGHT_YES
-            else -> {
-                Log.w(TAG, "Invalid value for app_theme: $name")
-                null
-            }
+        /**
+         * The app is always dark. The [name] argument is ignored and kept only so
+         * existing callers compile; this never throws for any input.
+         */
+        @Suppress("UNUSED_PARAMETER")
+        fun setTheme(name: String) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
     }
 
@@ -41,12 +32,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         setEditTextPreferenceListener("dns_ip") {
             it.isBlank() || checkNotLocalIp(it)
         }
-
-        findPreferenceNotNull<DropDownPreference>("app_theme")
-            .setOnPreferenceChangeListener { _, newValue ->
-                setTheme(newValue as String)
-                true
-            }
 
         val switchCommandLineSettings = findPreferenceNotNull<SwitchPreference>(
             "byedpi_enable_cmd_settings"

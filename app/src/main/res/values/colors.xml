@@ -3,15 +3,29 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Brand palette (from the app logo) -->
+    <!-- Legacy brand palette (kept so existing references keep compiling) -->
     <color name="brand_navy">#07081A</color>
     <color name="brand_blue">#5976DF</color>
     <color name="brand_blue_dark">#3C52A3</color>
     <color name="accent_orange">#FF6A4D</color>
 
-    <!-- Main-screen state colors -->
+    <!-- Legacy main-screen state colors (no longer used by MainActivity) -->
     <color name="connect_button">#5976DF</color>
     <color name="disconnect_button">#E5484D</color>
     <color name="dot_idle">#8A8F98</color>
     <color name="dot_active">#34C759</color>
+
+    <!-- Dark design system (bariskeser.com) -->
+    <color name="th_bg">#FF08090D</color>
+    <color name="th_surface">#FF121318</color>
+    <color name="th_surface2">#FF15161C</color>
+    <color name="th_connected_button">#FF16171D</color>
+    <color name="th_text1">#FFF4F5F7</color>
+    <color name="th_text2">#FFA7AEBB</color>
+    <color name="th_text3">#FF6B7280</color>
+    <color name="th_red">#FFFF453A</color>
+    <color name="th_red_soft">#FFFF9D92</color>
+    <color name="th_brass">#FFC8A45A</color>
+    <color name="th_green">#FF1ED760</color>
+    <color name="th_hairline">#17FFFFFF</color>
 </resources>

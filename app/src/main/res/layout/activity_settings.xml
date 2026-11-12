@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/th_bg"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -29,20 +31,22 @@
             android:layout_marginStart="14dp"
             android:orientation="vertical">
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textSize="22sp"
+                android:textColor="@color/th_text1"
+                android:fontFamily="@font/grenze_gotisch"
+                app:fontFamily="@font/grenze_gotisch" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/settings_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
-                android:textColor="?android:attr/textColorSecondary"
+                android:fontFamily="monospace"
+                android:textColor="@color/th_brass"
                 tools:text="2.0.0" />
         </LinearLayout>
     </LinearLayout>
@@ -50,8 +54,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:alpha="0.15"
-        android:background="?android:attr/textColorSecondary" />
+        android:background="@color/th_hairline" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/settings"
