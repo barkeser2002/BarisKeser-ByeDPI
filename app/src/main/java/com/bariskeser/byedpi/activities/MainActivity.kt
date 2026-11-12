@@ -32,6 +32,7 @@ import com.bariskeser.byedpi.services.appStatus
 import com.bariskeser.byedpi.utility.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -68,11 +69,13 @@ class MainActivity : AppCompatActivity() {
                 val logs = collectLogs()
 
                 if (logs == null) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        R.string.logs_failed,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            R.string.logs_failed,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 } else {
                     val uri = it.data?.data ?: run {
                         Log.e(TAG, "No data in result")
@@ -250,6 +253,8 @@ class MainActivity : AppCompatActivity() {
      * we remember that and don't ask again.
      */
     private fun maybePromptBatteryOptimization() {
+        // The battery-optimization APIs are only available from API 23.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
         val preferences = getPreferences()
         if (preferences.getBoolean("battery_opt_prompted", false)) return
         if (isIgnoringBatteryOptimizations(this)) return

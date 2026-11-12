@@ -1,9 +1,11 @@
 package com.bariskeser.byedpi.core
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -60,22 +62,25 @@ class StrategyTester(private val host: String) {
         }
     }
 
-    private suspend fun testCandidate(args: String): StrategyResult = coroutineScope {
+    private suspend fun testCandidate(args: String): StrategyResult {
         val proxy = ByeDpiProxy()
         val preferences = ByeDpiProxyCmdPreferences(
             cmd = args,
             ip = PROXY_IP,
             port = PROXY_PORT.toString(),
         )
-        // startProxy blocks until the proxy is stopped, so it gets its own job.
-        val proxyJob = launch(Dispatchers.IO) { proxy.startProxy(preferences) }
+        // startProxy blocks until the proxy is stopped. It runs in its own scope rather than
+        // coroutineScope, because a scope waits for all children and would hang on a stuck proxy.
+        val proxyScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        val proxyJob = proxyScope.launch { proxy.startProxy(preferences) }
         try {
             delay(SETTLE_DELAY_MS)
-            withContext(Dispatchers.IO) { probe() }
+            return withContext(Dispatchers.IO) { probe() }
         } finally {
             withContext(NonCancellable + Dispatchers.IO) {
                 stopProxy(proxy, proxyJob)
             }
+            proxyScope.cancel()
         }
     }
 
@@ -113,7 +118,8 @@ class StrategyTester(private val host: String) {
         val joined = withTimeoutOrNull(STOP_JOIN_TIMEOUT_MS) { proxyJob.join() }
         if (joined == null) {
             proxy.forceClose()
-            proxyJob.join()
+            // Bounded as well: a native thread that ignores forceClose must not hang the test.
+            withTimeoutOrNull(STOP_JOIN_TIMEOUT_MS) { proxyJob.join() }
         }
     }
 }

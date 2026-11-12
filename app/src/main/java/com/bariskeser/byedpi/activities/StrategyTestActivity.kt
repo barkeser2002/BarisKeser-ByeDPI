@@ -19,7 +19,9 @@ import com.bariskeser.byedpi.databinding.ActivityStrategyTestBinding
 import com.bariskeser.byedpi.databinding.ItemStrategyBinding
 import com.bariskeser.byedpi.services.appStatus
 import com.bariskeser.byedpi.utility.getPreferences
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class StrategyTestActivity : AppCompatActivity() {
     companion object {
@@ -151,6 +153,7 @@ class StrategyTestActivity : AppCompatActivity() {
 
         val tester = StrategyTester(host)
         testJob = lifecycleScope.launch {
+            var failed = false
             try {
                 tester.run(
                     candidates = candidates,
@@ -173,8 +176,13 @@ class StrategyTestActivity : AppCompatActivity() {
                 binding.statusText.setText(
                     if (bestIndex != null) R.string.st_done else R.string.st_no_success
                 )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                failed = true
+                binding.statusText.setText(R.string.st_no_success)
             } finally {
-                if (completed < candidates.size) {
+                if (!failed && completed < candidates.size) {
                     binding.statusText.setText(R.string.st_cancelled)
                 }
                 testingIndex = null

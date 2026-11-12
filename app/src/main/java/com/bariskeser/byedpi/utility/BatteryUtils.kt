@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
@@ -17,6 +18,8 @@ private const val TAG = "BatteryUtils"
  * tunnel dropping "by itself" in the background.
  */
 fun isIgnoringBatteryOptimizations(context: Context): Boolean {
+    // PowerManager.isIgnoringBatteryOptimizations() is API 23+; Doze does not exist below that.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
     val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager ?: return true
     return pm.isIgnoringBatteryOptimizations(context.packageName)
 }
@@ -28,6 +31,7 @@ fun isIgnoringBatteryOptimizations(context: Context): Boolean {
  */
 @SuppressLint("BatteryLife")
 fun requestIgnoreBatteryOptimizations(context: Context) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
     try {
         val intent = Intent(
             Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
