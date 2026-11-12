@@ -2,9 +2,9 @@ package com.bariskeser.byedpi.services
 
 import android.app.Notification
 import android.content.Intent
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-import android.os.Build
+import android.content.pm.ServiceInfo
 import android.util.Log
+import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.bariskeser.byedpi.R
@@ -45,18 +45,22 @@ class ByeDpiProxyService : LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         return when (val action = intent?.action) {
-            START_ACTION -> {
+            START_ACTION, null -> {
+                // Must be called for every startForegroundService() delivery (API 26+).
+                startForegroundCompat()
                 lifecycleScope.launch { start() }
                 START_STICKY
             }
 
             STOP_ACTION -> {
+                startForegroundCompat()
                 lifecycleScope.launch { stop() }
                 START_NOT_STICKY
             }
 
             else -> {
                 Log.w(TAG, "Unknown action: $action")
+                stopSelf(startId)
                 START_NOT_STICKY
             }
         }
@@ -75,7 +79,6 @@ class ByeDpiProxyService : LifecycleService() {
                 startProxy()
             }
             updateStatus(ServiceStatus.Connected)
-            startForeground()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start proxy", e)
             updateStatus(ServiceStatus.Failed)
@@ -83,17 +86,13 @@ class ByeDpiProxyService : LifecycleService() {
         }
     }
 
-    private fun startForeground() {
-        val notification: Notification = createNotification()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(
-                FOREGROUND_SERVICE_ID,
-                notification,
-                FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
-            )
-        } else {
-            startForeground(FOREGROUND_SERVICE_ID, notification)
-        }
+    private fun startForegroundCompat() {
+        ServiceCompat.startForeground(
+            this,
+            FOREGROUND_SERVICE_ID,
+            createNotification(),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+        )
     }
 
     private suspend fun stop() {
