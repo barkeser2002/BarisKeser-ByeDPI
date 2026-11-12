@@ -1,14 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme (light). Brand palette: navy primary + orange accent. -->
-    <style name="Theme.ByeDPI.Base" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorPrimary">#3C52A3</item>
-        <item name="colorPrimaryVariant">#2C3E7E</item>
+    <!-- Dark-only design. The Dark parent is used directly (not DayNight) and
+         MainActivity forces MODE_NIGHT_YES, so the app is always dark. -->
+    <style name="Theme.ByeDPI.Base" parent="Theme.MaterialComponents">
+        <item name="colorPrimary">@color/th_red</item>
+        <item name="colorPrimaryVariant">@color/th_red</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">#FF6A4D</item>
-        <item name="colorSecondaryVariant">#E5522F</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="colorSecondary">@color/th_brass</item>
+        <item name="colorSecondaryVariant">@color/th_brass</item>
+        <item name="colorOnSecondary">@color/th_bg</item>
+        <item name="colorSurface">@color/th_surface</item>
+        <item name="colorOnSurface">@color/th_text1</item>
+        <item name="colorOnBackground">@color/th_text1</item>
+        <item name="colorControlNormal">@color/th_text2</item>
+        <item name="colorControlActivated">@color/th_red</item>
+        <item name="android:colorBackground">@color/th_bg</item>
+        <item name="android:windowBackground">@color/th_bg</item>
+        <item name="android:statusBarColor">@color/th_bg</item>
+        <item name="android:navigationBarColor">@color/th_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:textColorPrimary">@color/th_text1</item>
+        <item name="android:textColorSecondary">@color/th_text2</item>
+        <item name="actionBarStyle">@style/Widget.ByeDPI.ActionBar</item>
     </style>
 
     <style name="Theme.ByeDPI" parent="Theme.ByeDPI.Base" />
+
+    <style name="Widget.ByeDPI.ActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/th_bg</item>
+        <item name="background">@color/th_bg</item>
+        <item name="titleTextStyle">@style/TextAppearance.ByeDPI.ActionBarTitle</item>
+    </style>
+
+    <style name="TextAppearance.ByeDPI.ActionBarTitle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/th_text1</item>
+        <item name="android:fontFamily">@font/grenze_gotisch</item>
+        <item name="fontFamily">@font/grenze_gotisch</item>
+    </style>
 </resources>

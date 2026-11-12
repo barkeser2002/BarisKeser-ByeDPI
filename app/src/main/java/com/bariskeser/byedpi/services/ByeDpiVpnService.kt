@@ -53,11 +53,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
         super.onStartCommand(intent, flags, startId)
         return when (val action = intent?.action) {
             START_ACTION -> {
+                // Must be called for every startForegroundService() delivery (API 26+).
+                startForeground()
                 lifecycleScope.launch { start() }
                 START_STICKY
             }
 
             STOP_ACTION -> {
+                startForeground()
                 lifecycleScope.launch { stop() }
                 START_NOT_STICKY
             }
@@ -88,7 +91,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 startTun2Socks()
             }
             updateStatus(ServiceStatus.Connected)
-            startForeground()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start VPN", e)
             updateStatus(ServiceStatus.Failed)
@@ -145,11 +147,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 if (code != 0) {
                     Log.e(TAG, "Proxy stopped with code $code")
                     updateStatus(ServiceStatus.Failed)
-                } else {
-                    if (!stopping) {
-                        stop()
-                        updateStatus(ServiceStatus.Disconnected)
-                    }
+                }
+                if (!stopping && status != ServiceStatus.Disconnected) {
+                    // Tear down outside this job: stop() joins proxyJob and would deadlock here.
+                    lifecycleScope.launch { stop() }
                 }
             }
         }
@@ -308,6 +309,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
         }
 
         builder.addDisallowedApplication(applicationContext.packageName)
+
+        for (pkg in getPreferences().getSplitExcludedApps()) {
+            try {
+                builder.addDisallowedApplication(pkg)
+            } catch (e: android.content.pm.PackageManager.NameNotFoundException) {
+                Log.w(TAG, "Excluded app not installed: $pkg")
+            }
+        }
 
         return builder
     }

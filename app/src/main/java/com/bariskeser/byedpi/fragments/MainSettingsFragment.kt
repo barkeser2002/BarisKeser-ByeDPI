@@ -2,7 +2,6 @@ package com.bariskeser.byedpi.fragments
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import com.bariskeser.byedpi.BuildConfig
@@ -12,21 +11,13 @@ import com.bariskeser.byedpi.utility.*
 
 class MainSettingsFragment : PreferenceFragmentCompat() {
     companion object {
-        private val TAG: String = MainSettingsFragment::class.java.simpleName
-
-        fun setTheme(name: String) =
-            themeByName(name)?.let {
-                AppCompatDelegate.setDefaultNightMode(it)
-            } ?: throw IllegalStateException("Invalid value for app_theme: $name")
-
-        private fun themeByName(name: String): Int? = when (name) {
-            "system" -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            "light" -> AppCompatDelegate.MODE_NIGHT_NO
-            "dark" -> AppCompatDelegate.MODE_NIGHT_YES
-            else -> {
-                Log.w(TAG, "Invalid value for app_theme: $name")
-                null
-            }
+        /**
+         * The app is always dark. The [name] argument is ignored and kept only so
+         * existing callers compile; this never throws for any input.
+         */
+        @Suppress("UNUSED_PARAMETER")
+        fun setTheme(name: String) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
     }
 
@@ -42,27 +33,14 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             it.isBlank() || checkNotLocalIp(it)
         }
 
-        findPreferenceNotNull<DropDownPreference>("app_theme")
-            .setOnPreferenceChangeListener { _, newValue ->
-                setTheme(newValue as String)
-                true
-            }
-
         val switchCommandLineSettings = findPreferenceNotNull<SwitchPreference>(
             "byedpi_enable_cmd_settings"
         )
-        val uiSettings = findPreferenceNotNull<Preference>("byedpi_ui_settings")
-        val cmdSettings = findPreferenceNotNull<Preference>("byedpi_cmd_settings")
 
-        val setByeDpiSettingsMode = { enable: Boolean ->
-            uiSettings.isEnabled = !enable
-            cmdSettings.isEnabled = enable
-        }
-
-        setByeDpiSettingsMode(switchCommandLineSettings.isChecked)
+        applyCommandLineMode(switchCommandLineSettings.isChecked)
 
         switchCommandLineSettings.setOnPreferenceChangeListener { _, newValue ->
-            setByeDpiSettingsMode(newValue as Boolean)
+            applyCommandLineMode(newValue as Boolean)
             true
         }
 
@@ -74,7 +52,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
                 ?.putBoolean("byedpi_enable_cmd_settings", true)
                 ?.apply()
             switchCommandLineSettings.isChecked = true
-            setByeDpiSettingsMode(true)
+            applyCommandLineMode(true)
             true
         }
 
@@ -86,11 +64,34 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
     override fun onResume() {
         super.onResume()
         sharedPreferences?.registerOnSharedPreferenceChangeListener(preferenceListener)
+        // Settings may have been changed by another screen (e.g. the strategy test)
+        // while this fragment was paused, so re-read them from storage.
+        syncCommandLineUi()
+        updatePreferences()
     }
 
     override fun onPause() {
         super.onPause()
         sharedPreferences?.unregisterOnSharedPreferenceChangeListener(preferenceListener)
+    }
+
+    private fun applyCommandLineMode(enable: Boolean) {
+        findPreference<Preference>("byedpi_ui_settings")?.isEnabled = !enable
+        findPreference<Preference>("byedpi_cmd_settings")?.isEnabled = enable
+    }
+
+    private fun syncCommandLineUi() {
+        val prefs = preferenceManager?.sharedPreferences ?: return
+        val enabled = prefs.getBoolean("byedpi_enable_cmd_settings", false)
+        findPreference<SwitchPreference>("byedpi_enable_cmd_settings")?.isChecked = enabled
+        applyCommandLineMode(enabled)
+
+        val storedArgs = prefs.getString("byedpi_cmd_args", null)
+        findPreference<DropDownPreference>("turkey_preset")?.let { preset ->
+            if (storedArgs != null && preset.entryValues?.contains(storedArgs) == true) {
+                preset.value = storedArgs
+            }
+        }
     }
 
     private fun updatePreferences() {

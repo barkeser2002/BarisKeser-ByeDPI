@@ -18,19 +18,21 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.bariskeser.byedpi.BuildConfig
 import com.bariskeser.byedpi.R
 import com.bariskeser.byedpi.data.*
-import com.bariskeser.byedpi.fragments.MainSettingsFragment
 import com.bariskeser.byedpi.databinding.ActivityMainBinding
 import com.bariskeser.byedpi.services.ServiceManager
 import com.bariskeser.byedpi.services.appStatus
 import com.bariskeser.byedpi.utility.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -67,11 +69,13 @@ class MainActivity : AppCompatActivity() {
                 val logs = collectLogs()
 
                 if (logs == null) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        R.string.logs_failed,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            R.string.logs_failed,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 } else {
                     val uri = it.data?.data ?: run {
                         Log.e(TAG, "No data in result")
@@ -125,6 +129,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // The app is always dark; set before the activity is created so it takes effect.
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -167,10 +173,6 @@ class MainActivity : AppCompatActivity() {
         binding.aboutDocs.setOnClickListener {
             openUrl(getString(R.string.byedpi_docs))
         }
-
-        val theme = getPreferences()
-            .getString("app_theme", null)
-        MainSettingsFragment.setTheme(theme ?: "system")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(
@@ -229,6 +231,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun start() {
+        maybePromptBatteryOptimization()
         when (getPreferences().mode()) {
             Mode.VPN -> {
                 val intentPrepare = VpnService.prepare(this)
@@ -241,6 +244,32 @@ class MainActivity : AppCompatActivity() {
 
             Mode.Proxy -> ServiceManager.start(this, Mode.Proxy)
         }
+    }
+
+    /**
+     * Keeps the tunnel alive in the background by asking, once, for the
+     * battery-optimization exemption. Without it Doze and OEM task-killers freeze
+     * the foreground service after the app leaves the screen. If the user declines
+     * we remember that and don't ask again.
+     */
+    private fun maybePromptBatteryOptimization() {
+        // The battery-optimization APIs are only available from API 23.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        val preferences = getPreferences()
+        if (preferences.getBoolean("battery_opt_prompted", false)) return
+        if (isIgnoringBatteryOptimizations(this)) return
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.battery_opt_title)
+            .setMessage(R.string.battery_opt_message)
+            .setPositiveButton(R.string.battery_opt_allow) { _, _ ->
+                preferences.edit().putBoolean("battery_opt_prompted", true).apply()
+                requestIgnoreBatteryOptimizations(this)
+            }
+            .setNegativeButton(R.string.battery_opt_later) { _, _ ->
+                preferences.edit().putBoolean("battery_opt_prompted", true).apply()
+            }
+            .show()
     }
 
     private fun stop() {
@@ -276,7 +305,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 binding.statusButton.isEnabled = true
-                setStateColors(R.color.connect_button, R.color.dot_idle)
+                setStateColors(connected = false)
             }
 
             AppStatus.Running -> {
@@ -292,16 +321,36 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 binding.statusButton.isEnabled = true
-                setStateColors(R.color.disconnect_button, R.color.dot_active)
+                setStateColors(connected = true)
             }
         }
     }
 
-    private fun setStateColors(buttonColor: Int, dotColor: Int) {
+    /**
+     * Disconnected: red button with white text, grey ring and dot.
+     * Connected: dark button with soft red text, green ring and dot.
+     */
+    private fun setStateColors(connected: Boolean) {
+        val buttonColor: Int
+        val textColor: Int
+        val accentColor: Int
+        if (connected) {
+            buttonColor = R.color.th_connected_button
+            textColor = R.color.th_red_soft
+            accentColor = R.color.th_green
+        } else {
+            buttonColor = R.color.th_red
+            textColor = R.color.white
+            accentColor = R.color.th_text3
+        }
+
         binding.statusButton.backgroundTintList =
             ColorStateList.valueOf(ContextCompat.getColor(this, buttonColor))
+        binding.statusButton.setTextColor(ContextCompat.getColor(this, textColor))
+        binding.statusRing.backgroundTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(this, accentColor))
         binding.statusDot.backgroundTintList =
-            ColorStateList.valueOf(ContextCompat.getColor(this, dotColor))
+            ColorStateList.valueOf(ContextCompat.getColor(this, accentColor))
     }
 
     private fun showSection(home: Boolean) {

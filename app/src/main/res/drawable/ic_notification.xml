@@ -1,11 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status bar notification icon: white-only shield outline with antenna strokes. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <!-- Broken shield (brand motif): filled shield with a lightning crack cut out -->
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
     <path
-        android:fillColor="#ffffff"
-        android:fillType="evenOdd"
-        android:pathData="M12,2.5 L19.5,5.5 L19.5,11 C19.5,15.6 16.2,19.2 12,21.5 C7.8,19.2 4.5,15.6 4.5,11 L4.5,5.5 Z M12.7,6.8 L9.4,12.2 L11.5,12.2 L10.3,17 L14.2,11 L12.1,11 Z" />
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.5"
+        android:pathData="M24,2.5 L43,10 L43,22.5 C43,34.1 35.1,42.5 24,46.5 C12.9,42.5 5,34.1 5,22.5 L5,10 Z" />
+
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:pathData="M16,21 L32,21 M19.5,21 L19.5,30.5 M28.5,21 L28.5,30.5 M13.5,27.5 L34.5,13" />
 </vector>

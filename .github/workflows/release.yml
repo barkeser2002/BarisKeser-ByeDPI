@@ -53,6 +53,8 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
 
       - name: Install NDK r27, CMake and SDK 36
         run: |
@@ -118,5 +120,5 @@ jobs:
           else
             gh release create "$TAG" \
               "${{ steps.out.outputs.apk }}" "${{ steps.out.outputs.aab }}" \
-              --title "BarisKeser-ByeDPI $TAG" --generate-notes --target "${GITHUB_SHA}"
+              --title "ByeDPI $TAG" --generate-notes --target "${GITHUB_SHA}"
           fi

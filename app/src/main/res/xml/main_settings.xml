@@ -5,16 +5,19 @@
     android:tag="main_settings">
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/general_category">
+        android:title="@string/boot_category">
 
-        <DropDownPreference
-            android:key="app_theme"
-            android:icon="@drawable/ic_pref_theme"
-            android:title="@string/theme_settings"
-            android:entries="@array/themes"
-            android:entryValues="@array/themes_entries"
-            android:defaultValue="system"
-            app:useSimpleSummaryProvider="true" />
+        <SwitchPreference
+            android:key="auto_connect_boot"
+            android:icon="@drawable/ic_pref_shield"
+            android:title="@string/boot_title"
+            android:summary="@string/boot_summary"
+            android:defaultValue="false" />
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/general_category">
 
         <DropDownPreference
             android:key="byedpi_mode"
@@ -31,6 +34,16 @@
             android:title="@string/dbs_ip_setting"
             android:defaultValue="1.1.1.1"
             app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:key="split_tunnel"
+            android:icon="@drawable/ic_pref_mode"
+            android:title="@string/split_title"
+            android:summary="@string/split_summary">
+            <intent
+                android:targetPackage="com.bariskeser.byedpi"
+                android:targetClass="com.bariskeser.byedpi.activities.AppSelectActivity" />
+        </Preference>
 
         <SwitchPreference
             android:key="ipv6_enable"
@@ -52,11 +65,21 @@
             android:defaultValue="--split 1 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s"
             app:useSimpleSummaryProvider="true" />
 
+        <Preference
+            android:key="strategy_test"
+            android:icon="@drawable/ic_pref_tune"
+            android:title="@string/st_title"
+            android:summary="@string/st_summary">
+            <intent
+                android:targetPackage="com.bariskeser.byedpi"
+                android:targetClass="com.bariskeser.byedpi.activities.StrategyTestActivity" />
+        </Preference>
+
         <SwitchPreference
             android:key="byedpi_enable_cmd_settings"
             android:icon="@drawable/ic_pref_terminal"
             android:title="@string/use_command_line_settings"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
 
         <Preference
             android:key="byedpi_ui_settings"
