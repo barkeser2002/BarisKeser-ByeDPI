@@ -1,26 +1,28 @@
 package com.bariskeser.byedpi.activities
 
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.bariskeser.byedpi.R
 import com.bariskeser.byedpi.core.StrategyCandidate
 import com.bariskeser.byedpi.core.StrategyOutcome
-import com.bariskeser.byedpi.core.StrategyResult
-import com.bariskeser.byedpi.core.StrategyTester
 import com.bariskeser.byedpi.data.AppStatus
 import com.bariskeser.byedpi.databinding.ActivityStrategyTestBinding
 import com.bariskeser.byedpi.databinding.ItemStrategyBinding
 import com.bariskeser.byedpi.services.appStatus
 import com.bariskeser.byedpi.utility.getPreferences
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class StrategyTestActivity : AppCompatActivity() {
@@ -36,18 +38,18 @@ class StrategyTestActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityStrategyTestBinding
-    private var testJob: Job? = null
-    private var running = false
+    private val viewModel: StrategyTestViewModel by viewModels()
 
-    private var candidates: List<StrategyCandidate> = emptyList()
+    /** Row views for the current candidate list. Rebuilt when the list changes. */
     private val itemViews = mutableListOf<ItemStrategyBinding>()
-    private var results: Array<StrategyResult?> = emptyArray()
-    private var testingIndex: Int? = null
-    private var bestIndex: Int? = null
-    private var completed = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // The app is dark-only, so the system bars always use light icons.
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+        )
 
         binding = ActivityStrategyTestBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -60,24 +62,26 @@ class StrategyTestActivity : AppCompatActivity() {
             )
         }
 
-        candidates = buildCandidates()
-        renderList()
+        viewModel.ensureCandidates(buildCandidates())
 
         binding.startButton.setOnClickListener {
-            if (running) stopTest() else startTest()
+            if (viewModel.state.value.running) viewModel.stop() else startTest()
         }
         binding.applyButton.setOnClickListener { applyBest() }
+
+        // Collect in STARTED so the rows are rebuilt from the ViewModel after a
+        // recreation, and so nothing updates while the screen is in the background.
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect { render(it) }
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        if (!running) refreshAvailability()
-    }
-
-    override fun onDestroy() {
-        // Cancelling stops the in-flight proxy through StrategyTester's finally block.
-        testJob?.cancel()
-        super.onDestroy()
+        // Re-check the VPN/proxy status when returning from another screen.
+        render(viewModel.state.value)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
@@ -104,38 +108,6 @@ class StrategyTestActivity : AppCompatActivity() {
         return (fromPresets + extras).distinctBy { it.args }
     }
 
-    /** Rebuilds the candidate list with every row pending. */
-    private fun renderList() {
-        binding.resultsContainer.removeAllViews()
-        itemViews.clear()
-        results = arrayOfNulls(candidates.size)
-        testingIndex = null
-        bestIndex = null
-        completed = 0
-
-        candidates.forEachIndexed { index, candidate ->
-            val item = ItemStrategyBinding.inflate(layoutInflater, binding.resultsContainer, false)
-            item.itemName.text = candidate.name
-            item.itemArgs.text = candidate.args
-            binding.resultsContainer.addView(item.root)
-            itemViews += item
-            showItem(index)
-        }
-
-        binding.progressBar.max = candidates.size
-        binding.progressBar.progress = 0
-        binding.progressText.text = getString(R.string.st_progress, 0, candidates.size)
-        updateApplyButton()
-    }
-
-    private fun refreshAvailability() {
-        val halted = appStatus.first == AppStatus.Halted
-        binding.startButton.isEnabled = halted
-        if (!halted) {
-            binding.statusText.setText(R.string.st_blocked)
-        }
-    }
-
     private fun startTest() {
         val host = normalizeHost(binding.hostInput.text?.toString().orEmpty())
         if (host.isEmpty()) {
@@ -143,86 +115,70 @@ class StrategyTestActivity : AppCompatActivity() {
             return
         }
         if (appStatus.first != AppStatus.Halted) {
-            refreshAvailability()
+            render(viewModel.state.value)
             return
         }
+        viewModel.start(host)
+    }
 
-        renderList()
-        setRunning(true)
-        binding.statusText.setText(R.string.st_idle)
+    /** Draws the whole screen from [state]. Safe to call repeatedly. */
+    private fun render(state: StrategyUiState) {
+        if (itemViews.size != state.candidates.size) {
+            rebuildRows(state.candidates)
+        }
+        state.candidates.forEachIndexed { index, _ ->
+            renderRow(index, state)
+        }
 
-        val tester = StrategyTester(host)
-        testJob = lifecycleScope.launch {
-            var failed = false
-            try {
-                tester.run(
-                    candidates = candidates,
-                    onStart = { index ->
-                        testingIndex = index
-                        binding.statusText.text =
-                            getString(R.string.st_testing_name, candidates[index].name)
-                        showItem(index)
-                    },
-                    onResult = { index, result ->
-                        results[index] = result
-                        testingIndex = null
-                        completed++
-                        binding.progressBar.progress = completed
-                        binding.progressText.text =
-                            getString(R.string.st_progress, completed, candidates.size)
-                        refreshBest()
-                    },
-                )
-                binding.statusText.setText(
-                    if (bestIndex != null) R.string.st_done else R.string.st_no_success
-                )
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                failed = true
-                binding.statusText.setText(R.string.st_no_success)
-            } finally {
-                if (!failed && completed < candidates.size) {
-                    binding.statusText.setText(R.string.st_cancelled)
-                }
-                testingIndex = null
-                setRunning(false)
-            }
+        binding.progressBar.max = state.candidates.size
+        binding.progressBar.progress = state.completed
+        binding.progressText.text = getString(R.string.st_progress, state.completed, state.candidates.size)
+
+        binding.statusText.text = statusText(state)
+
+        binding.startButton.setText(if (state.running) R.string.st_stop else R.string.st_start)
+        binding.startButton.isEnabled = state.running || appStatus.first == AppStatus.Halted
+        binding.hostInput.isEnabled = !state.running
+        binding.applyButton.isEnabled = !state.running && state.bestIndex != null
+    }
+
+    /** Creates one row per candidate. Called only when the list size changes. */
+    private fun rebuildRows(candidates: List<StrategyCandidate>) {
+        binding.resultsContainer.removeAllViews()
+        itemViews.clear()
+        candidates.forEach { candidate ->
+            val item = ItemStrategyBinding.inflate(layoutInflater, binding.resultsContainer, false)
+            item.itemName.text = candidate.name
+            item.itemArgs.text = candidate.args
+            binding.resultsContainer.addView(item.root)
+            itemViews += item
         }
     }
 
-    private fun stopTest() {
-        binding.statusText.setText(R.string.st_stopping)
-        testJob?.cancel()
+    private fun statusText(state: StrategyUiState): String = when (state.status) {
+        StrategyStatus.Idle ->
+            if (appStatus.first == AppStatus.Halted) {
+                getString(R.string.st_idle)
+            } else {
+                getString(R.string.st_blocked)
+            }
+
+        StrategyStatus.Testing -> state.testingIndex
+            ?.let { getString(R.string.st_testing_name, state.candidates[it].name) }
+            ?: getString(R.string.st_idle)
+
+        StrategyStatus.Stopping -> getString(R.string.st_stopping)
+        StrategyStatus.Done -> getString(R.string.st_done)
+        StrategyStatus.NoSuccess -> getString(R.string.st_no_success)
+        StrategyStatus.Cancelled -> getString(R.string.st_cancelled)
     }
 
-    private fun setRunning(value: Boolean) {
-        running = value
-        binding.startButton.setText(if (value) R.string.st_stop else R.string.st_start)
-        binding.startButton.isEnabled = value || appStatus.first == AppStatus.Halted
-        binding.hostInput.isEnabled = !value
-        updateApplyButton()
-    }
-
-    /** Best = lowest latency among successful candidates. */
-    private fun refreshBest() {
-        bestIndex = results.indices
-            .filter { results[it]?.outcome == StrategyOutcome.Success }
-            .minByOrNull { results[it]?.latencyMs ?: Long.MAX_VALUE }
-        itemViews.indices.forEach { showItem(it) }
-        updateApplyButton()
-    }
-
-    private fun updateApplyButton() {
-        binding.applyButton.isEnabled = !running && bestIndex != null
-    }
-
-    private fun showItem(index: Int) {
+    private fun renderRow(index: Int, state: StrategyUiState) {
         val item = itemViews.getOrNull(index) ?: return
-        val result = results.getOrNull(index)
+        val result = state.results.getOrNull(index)
 
         if (result == null) {
-            if (testingIndex == index) {
+            if (state.testingIndex == index) {
                 setResultText(item, getString(R.string.st_testing), R.color.th_text2)
             } else {
                 setResultText(item, getString(R.string.st_pending), R.color.th_text3)
@@ -249,7 +205,7 @@ class StrategyTestActivity : AppCompatActivity() {
             }
         }
 
-        item.itemBadge.visibility = if (index == bestIndex) View.VISIBLE else View.GONE
+        item.itemBadge.visibility = if (index == state.bestIndex) View.VISIBLE else View.GONE
     }
 
     private fun setResultText(item: ItemStrategyBinding, text: String, colorRes: Int) {
@@ -259,8 +215,9 @@ class StrategyTestActivity : AppCompatActivity() {
     }
 
     private fun applyBest() {
-        val index = bestIndex ?: return
-        val candidate = candidates[index]
+        val state = viewModel.state.value
+        val index = state.bestIndex ?: return
+        val candidate = state.candidates[index]
 
         getPreferences().edit()
             .putString("byedpi_cmd_args", candidate.args)

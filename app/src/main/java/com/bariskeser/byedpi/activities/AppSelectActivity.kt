@@ -1,5 +1,6 @@
 package com.bariskeser.byedpi.activities
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -8,32 +9,44 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.bariskeser.byedpi.R
 import com.bariskeser.byedpi.databinding.ActivityAppSelectBinding
 import com.bariskeser.byedpi.utility.SplitAppEntry
 import com.bariskeser.byedpi.utility.getPreferences
 import com.bariskeser.byedpi.utility.getSplitExcludedApps
-import com.bariskeser.byedpi.utility.loadSplitLaunchableApps
 import com.bariskeser.byedpi.utility.setSplitExcludedApps
 import com.google.android.material.switchmaterial.SwitchMaterial
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class AppSelectActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAppSelectBinding
+    private val viewModel: AppSelectViewModel by viewModels()
     private val adapter = AppAdapter()
 
-    private var allApps: List<SplitAppEntry> = emptyList()
     private var excludedPackages: Set<String> = emptySet()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // The app is dark-only, so the system bars always use light icons.
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+        )
         binding = ActivityAppSelectBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        applyWindowInsets()
 
         title = getString(R.string.split_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -41,11 +54,19 @@ class AppSelectActivity : AppCompatActivity() {
         excludedPackages = getPreferences().getSplitExcludedApps()
 
         binding.splitList.adapter = adapter
-        binding.splitSearch.doAfterTextChanged { text ->
-            applyFilter(text?.toString().orEmpty())
+        binding.splitSearch.doAfterTextChanged {
+            applyFilter(binding.splitSearch.text?.toString().orEmpty())
         }
 
-        loadApps()
+        // Collect the app list from the ViewModel. It is already loaded after a
+        // rotation, so the list is in place before the ListView restores its position.
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.apps.collect {
+                    applyFilter(binding.splitSearch.text?.toString().orEmpty())
+                }
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
@@ -57,27 +78,46 @@ class AppSelectActivity : AppCompatActivity() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun loadApps() {
-        binding.splitProgress.visibility = View.VISIBLE
-        lifecycleScope.launch {
-            val apps = withContext(Dispatchers.IO) {
-                loadSplitLaunchableApps(packageManager, packageName)
-            }
-            allApps = apps
-            binding.splitProgress.visibility = View.GONE
-            applyFilter(binding.splitSearch.text?.toString().orEmpty())
+    /**
+     * Keeps the content clear of the system bars and the display cutout. The list's
+     * bottom padding is added to its own padding and clipToPadding is false, so rows
+     * scroll behind the navigation bar but the last row can be reached.
+     * The listeners return the insets rather than consuming them, so child views still
+     * receive them on older releases.
+     */
+    private fun applyWindowInsets() {
+        val rootLeft = binding.root.paddingLeft
+        val rootRight = binding.root.paddingRight
+        val listBottom = binding.splitList.paddingBottom
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            view.updatePadding(left = rootLeft + bars.left, right = rootRight + bars.right)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.splitList) { view, insets ->
+            val bottom = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            ).bottom
+            view.updatePadding(bottom = listBottom + bottom)
+            insets
         }
     }
 
+    /** Shows the filtered list. The spinner is shown while the list is still loading. */
     private fun applyFilter(query: String) {
+        val allApps = viewModel.apps.value
         val needle = query.trim()
-        val filtered = if (needle.isEmpty()) {
-            allApps
-        } else {
-            allApps.filter { it.label.contains(needle, ignoreCase = true) }
+        val filtered: List<SplitAppEntry> = allApps.orEmpty().filter {
+            needle.isEmpty() || it.label.contains(needle, ignoreCase = true)
         }
         adapter.items = filtered
-        val loading = binding.splitProgress.visibility == View.VISIBLE
+
+        val loading = allApps == null
+        binding.splitProgress.visibility = if (loading) View.VISIBLE else View.GONE
         binding.splitEmpty.visibility = if (filtered.isEmpty() && !loading) {
             View.VISIBLE
         } else {
