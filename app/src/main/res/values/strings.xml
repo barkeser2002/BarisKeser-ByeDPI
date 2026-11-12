@@ -83,8 +83,8 @@
 
     <!-- Battery optimization prompt -->
     <string name="battery_opt_title">Arka planda çalışmaya devam etsin</string>
-    <string name="battery_opt_message">Bağlantının ekran kapalıyken ya da uygulama arka plandayken kesilmemesi için ByeDPI\'ı pil optimizasyonundan muaf tutmalısın. Bir sonraki ekranda \"İzin ver\" de.</string>
-    <string name="battery_opt_allow">İzin ver</string>
+    <string name="battery_opt_message">Bazı telefon üreticileri arka plandaki uygulamaları sıkı biçimde kısıtlar. Bağlantı ekran kapalıyken kopuyorsa ByeDPI\'ı pil optimizasyonu listesinde bulup \"Optimize etme\" seçeneğini işaretleyebilirsin. Bu isteğe bağlıdır; çoğu cihazda gerekmez.</string>
+    <string name="battery_opt_allow">Ayarları aç</string>
     <string name="battery_opt_later">Daha sonra</string>
 
     <!-- Theme -->
@@ -129,4 +129,20 @@
     <string name="st_apply">En iyi stratejiyi uygula</string>
     <string name="st_applied">%1$s uygulandı</string>
     <string name="st_extra_name">Ek strateji %1$d</string>
+
+    <!-- VPN disclosure -->
+    <string name="vpn_disclosure_title">VPN kullanımı</string>
+    <string name="vpn_disclosure_text">Bu uygulama, cihazınızda yerel bir tünel kurmak için Android VpnService özelliğini kullanır.\n\n• Uygulama trafiğiniz (muaf tuttuğunuz uygulamalar hariç) bu cihazda çalışan yerel bir SOCKS5 proxy\'sine (127.0.0.1) yönlendirilir. Proxy, bağlantının ilk paketlerinin gönderilme biçimini değiştirerek DPI (derin paket incelemesi) sistemlerinin bağlantıyı engellemesini zorlaştırmayı amaçlar.\n• DNS sorguları, ayarlarda seçtiğiniz DNS sunucusuna (varsayılan 1.1.1.1) gönderilir.\n• Muaf uygulamaları seçebilmek için cihazınıza yüklü, başlatılabilen uygulamaların listesi yalnızca cihazınızda okunur.\n• Hiçbir trafik, uygulama listesi ya da başka bir veri toplanmaz, cihaz dışında saklanmaz, geliştiriciye gönderilmez ve kimseyle paylaşılmaz.\n• Uzak bir VPN sunucusu kullanılmaz. Uygulama kendi şifrelemesini eklemez; sitelerin TLS gibi kendi şifrelemesi aynen geçerlidir.\n\nVPN bağlantısı yalnızca siz Bağlan dediğinizde başlar, Bağlantıyı Kes dediğinizde durur. Devam etmek için kabul edin ya da reddedin.</string>
+    <string name="vpn_disclosure_agree">Kabul ediyorum</string>
+    <string name="vpn_disclosure_decline">Reddediyorum</string>
+    <string name="vpn_disclosure_declined_hint">VPN başlatılmadı. Proxy modunu kullanabilir ya da VPN bildirimini kabul edip tekrar bağlanabilirsiniz.</string>
+    <string name="pref_vpn_disclosure_title">VPN bildirimi</string>
+    <string name="pref_vpn_disclosure_summary">VPN kullanımına ilişkin bilgiyi oku ve onayını yönet</string>
+
+    <!-- Notification permission rationale -->
+    <string name="notif_rationale_title">Bildirim izni</string>
+    <string name="notif_rationale_text">Bağlantı durumunu bildirimde göstermek ve bildirimdeki Durdur düğmesiyle kapatabilmek için bildirim iznine ihtiyaç var. İzin vermezsen bağlantı yine çalışır, ancak bildirim görünmez.</string>
+
+    <!-- Privacy -->
+    <string name="privacy_policy">Gizlilik politikası</string>
 </resources>

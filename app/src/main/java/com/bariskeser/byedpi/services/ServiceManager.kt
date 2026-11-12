@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import com.bariskeser.byedpi.data.Mode
 import com.bariskeser.byedpi.data.START_ACTION
 import com.bariskeser.byedpi.data.STOP_ACTION
+import com.bariskeser.byedpi.utility.hasVpnConsent
 
 object ServiceManager {
     private val TAG: String = ServiceManager::class.java.simpleName
@@ -14,6 +15,10 @@ object ServiceManager {
     fun start(context: Context, mode: Mode) {
         when (mode) {
             Mode.VPN -> {
+                if (!context.hasVpnConsent()) {
+                    Log.w(TAG, "VPN disclosure not accepted, not starting VPN")
+                    return
+                }
                 Log.i(TAG, "Starting VPN")
                 val intent = Intent(context, ByeDpiVpnService::class.java)
                 intent.action = START_ACTION

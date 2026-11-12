@@ -6,7 +6,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import com.bariskeser.byedpi.BuildConfig
 import com.bariskeser.byedpi.R
+import com.bariskeser.byedpi.data.AppStatus
 import com.bariskeser.byedpi.data.Mode
+import com.bariskeser.byedpi.services.ServiceManager
+import com.bariskeser.byedpi.services.appStatus
 import com.bariskeser.byedpi.utility.*
 
 class MainSettingsFragment : PreferenceFragmentCompat() {
@@ -26,8 +29,30 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             updatePreferences()
         }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Declining in review mode withdraws consent, so a running VPN must stop too.
+        parentFragmentManager.setFragmentResultListener(
+            VpnDisclosureDialogFragment.REQUEST_KEY,
+            this,
+        ) { _, bundle ->
+            if (!bundle.getBoolean(VpnDisclosureDialogFragment.RESULT_ACCEPTED)) {
+                val (status, mode) = appStatus
+                if (status == AppStatus.Running && mode == Mode.VPN) {
+                    ServiceManager.stop(requireContext())
+                }
+            }
+        }
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.main_settings, rootKey)
+
+        findPreferenceNotNull<Preference>("vpn_disclosure").setOnPreferenceClickListener {
+            VpnDisclosureDialogFragment.newInstance(review = true)
+                .show(parentFragmentManager, "vpn_disclosure_review")
+            true
+        }
 
         setEditTextPreferenceListener("dns_ip") {
             it.isBlank() || checkNotLocalIp(it)
