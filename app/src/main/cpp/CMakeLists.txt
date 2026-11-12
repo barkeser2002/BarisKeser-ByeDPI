@@ -14,6 +14,5 @@ target_compile_definitions(byedpi PRIVATE ANDROID_APP)
 target_link_libraries(byedpi PRIVATE android log)
 
 # Align shared library segments to 16 KB pages (Google Play requirement for
-# native code targeting Android 15+). Redundant on NDK r27+ where this is the
-# default, but kept explicit so the alignment does not depend on the toolchain.
-target_link_options(byedpi PRIVATE "-Wl,-z,max-page-size=16384")
+# native code targeting Android 15+). NDK r27 needs both flags explicitly.
+target_link_options(byedpi PRIVATE "-Wl,-z,max-page-size=16384" "-Wl,-z,common-page-size=16384")

@@ -7,17 +7,17 @@ android {
     namespace = "com.bariskeser.byedpi"
     compileSdk = 36
 
-    // Pin an NDK that aligns native libraries to 16 KB pages by default (r27+).
     // Google Play requires 16 KB page-size support for apps with native code
-    // targeting Android 15+ (API 35+). Both build systems (CMake and ndk-build)
-    // resolve their toolchain from this version.
+    // targeting Android 15+ (API 35+). NDK r27 needs explicit 16 KB linker flags
+    // (see Application.mk / CMakeLists.txt); r28+ aligns by default. Both build
+    // systems (CMake and ndk-build) resolve their toolchain from this version.
     ndkVersion = "27.2.12479018"
 
     defaultConfig {
         applicationId = "com.bariskeser.byedpi"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 36
-        versionCode = (findProperty("appVersionCode") as String?)?.toIntOrNull() ?: 13
+        versionCode = (findProperty("appVersionCode") as String?)?.toIntOrNull() ?: 14
         versionName = (findProperty("appVersionName") as String?) ?: "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -99,6 +99,8 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.lifecycle:lifecycle-service:2.8.4")
+    implementation("androidx.activity:activity-ktx:1.9.3")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
