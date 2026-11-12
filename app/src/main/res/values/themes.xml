@@ -2,7 +2,7 @@
 <resources>
     <!-- Dark-only design. The Dark parent is used directly (not DayNight) and
          MainActivity forces MODE_NIGHT_YES, so the app is always dark. -->
-    <style name="Theme.ByeDPI.Base" parent="Theme.MaterialComponents.Dark.ActionBar">
+    <style name="Theme.ByeDPI.Base" parent="Theme.MaterialComponents">
         <item name="colorPrimary">@color/th_red</item>
         <item name="colorPrimaryVariant">@color/th_red</item>
         <item name="colorOnPrimary">@color/white</item>

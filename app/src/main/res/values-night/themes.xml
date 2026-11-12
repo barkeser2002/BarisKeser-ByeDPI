@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Same dark palette as values/themes.xml: the app is always dark. -->
-    <style name="Theme.ByeDPI.Base" parent="Theme.MaterialComponents.Dark.ActionBar">
+    <style name="Theme.ByeDPI.Base" parent="Theme.MaterialComponents">
         <item name="colorPrimary">@color/th_red</item>
         <item name="colorPrimaryVariant">@color/th_red</item>
         <item name="colorOnPrimary">@color/white</item>
