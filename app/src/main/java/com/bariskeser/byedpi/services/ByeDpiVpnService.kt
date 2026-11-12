@@ -309,6 +309,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         builder.addDisallowedApplication(applicationContext.packageName)
 
+        for (pkg in getPreferences().getSplitExcludedApps()) {
+            try {
+                builder.addDisallowedApplication(pkg)
+            } catch (e: android.content.pm.PackageManager.NameNotFoundException) {
+                Log.w(TAG, "Excluded app not installed: $pkg")
+            }
+        }
+
         return builder
     }
 }
