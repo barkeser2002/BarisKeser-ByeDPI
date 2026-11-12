@@ -57,9 +57,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
             START_ACTION, VpnService.SERVICE_INTERFACE, null -> {
                 // Must be called for every startForegroundService() delivery (API 26+).
                 startForegroundCompat()
-                // App-initiated starts are only sent after consent. System and sticky
-                // restarts may arrive without it, so check before establishing the tunnel.
-                val startAllowed = action == START_ACTION || VpnService.prepare(this) == null
+                // Every start is checked: the disclosure consent and the system VPN
+                // permission. Sticky restarts and system starts can arrive without them,
+                // and a withdrawal can race an app start, so no start may skip the check.
+                val startAllowed = hasVpnConsent() && VpnService.prepare(this) == null
                 if (startAllowed) {
                     lifecycleScope.launch { start() }
                     START_STICKY
@@ -169,17 +170,21 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private suspend fun stopProxy() {
         Log.i(TAG, "Stopping proxy")
 
-        if (status == ServiceStatus.Disconnected) {
-            Log.w(TAG, "Proxy already disconnected")
+        // No job means no proxy was started by this service (or it is already stopped).
+        // Do not touch the native state then: forceClose would act on a stale descriptor.
+        val job = proxyJob
+        if (job == null || status == ServiceStatus.Disconnected) {
+            Log.w(TAG, "Proxy not running, nothing to stop")
+            proxyJob = null
             return
         }
 
         byeDpiProxy.stopProxy()
-        val joined = withTimeoutOrNull(3000) { proxyJob?.join() }
+        val joined = withTimeoutOrNull(3000) { job.join() }
         if (joined == null) {
             Log.w(TAG, "join timeout, force closing")
             byeDpiProxy.forceClose()
-            proxyJob?.join()
+            job.join()
         }
         proxyJob = null
 
@@ -259,11 +264,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
             when (newStatus) {
                 ServiceStatus.Connected -> AppStatus.Running
 
+                // proxyJob is kept here on purpose: stopProxy() joins it. Clearing it
+                // on Failed made a failed start skip the join and force-close the proxy.
                 ServiceStatus.Disconnected,
-                ServiceStatus.Failed -> {
-                    proxyJob = null
-                    AppStatus.Halted
-                }
+                ServiceStatus.Failed -> AppStatus.Halted
             },
             Mode.VPN
         )

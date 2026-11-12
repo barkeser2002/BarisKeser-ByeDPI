@@ -17,7 +17,8 @@ import com.bariskeser.byedpi.utility.setVpnConsent
  * Consent mode: "Agree" stores the consent. "Decline" and Back send a result
  * without saving anything, so the user can be asked again later.
  *
- * Review mode: "Agree" stores the consent. "Decline" withdraws it.
+ * Review mode: "Agree" stores the consent. "Decline" withdraws it. Back only closes
+ * the screen, so reading the text can never withdraw consent by accident.
  *
  * The outcome is delivered with [REQUEST_KEY] to the fragment manager that
  * showed the dialog, so the result survives configuration changes.
@@ -59,7 +60,8 @@ class VpnDisclosureDialogFragment : DialogFragment() {
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        answer(accepted = false)
+        // In review mode Back is not a withdrawal. Only the Decline button withdraws.
+        if (!reviewMode) answer(accepted = false)
     }
 
     private fun answer(accepted: Boolean) {

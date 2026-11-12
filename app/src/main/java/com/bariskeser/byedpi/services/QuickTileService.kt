@@ -15,6 +15,7 @@ import androidx.core.service.quicksettings.PendingIntentActivityWrapper
 import androidx.core.service.quicksettings.TileServiceCompat
 import com.bariskeser.byedpi.R
 import com.bariskeser.byedpi.activities.MainActivity
+import com.bariskeser.byedpi.core.StrategyTestGate
 import com.bariskeser.byedpi.data.*
 import com.bariskeser.byedpi.utility.getPreferences
 import com.bariskeser.byedpi.utility.hasVpnConsent
@@ -106,20 +107,34 @@ class QuickTileService : TileService() {
         setState(Tile.STATE_UNAVAILABLE)
 
         val (status) = appStatus
-        when (status) {
-            AppStatus.Halted -> {
-                val mode = getPreferences().mode()
+        try {
+            when (status) {
+                AppStatus.Halted -> {
+                    val mode = getPreferences().mode()
 
-                if (mode == Mode.VPN && (!hasVpnConsent() || VpnService.prepare(this) != null)) {
-                    updateStatus()
-                    launchActivity()
-                    return
+                    if (mode == Mode.VPN && (!hasVpnConsent() || VpnService.prepare(this) != null)) {
+                        updateStatus()
+                        launchActivity()
+                        return
+                    }
+
+                    if (!ServiceManager.start(this, mode)) {
+                        if (StrategyTestGate.isActive) {
+                            Toast.makeText(this, R.string.service_blocked_by_test, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        // No broadcast follows a refused start, so reset the tile here.
+                        updateStatus()
+                    }
                 }
 
-                ServiceManager.start(this, mode)
+                AppStatus.Running -> ServiceManager.stop(this)
             }
-
-            AppStatus.Running -> ServiceManager.stop(this)
+        } catch (e: Exception) {
+            // A foreground service start can be refused by the system. Never let that
+            // crash the process or leave the tile stuck in the unavailable state.
+            Log.e(TAG, "Tile action failed", e)
+            updateStatus()
         }
     }
 }

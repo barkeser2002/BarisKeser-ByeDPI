@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/th_bg"
-    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".activities.StrategyTestActivity">
 

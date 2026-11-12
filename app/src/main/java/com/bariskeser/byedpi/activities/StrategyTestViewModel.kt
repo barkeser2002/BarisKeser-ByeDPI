@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.bariskeser.byedpi.core.StrategyCandidate
 import com.bariskeser.byedpi.core.StrategyOutcome
 import com.bariskeser.byedpi.core.StrategyResult
+import com.bariskeser.byedpi.core.StrategyTestGate
 import com.bariskeser.byedpi.core.StrategyTester
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -52,6 +53,9 @@ class StrategyTestViewModel : ViewModel() {
     fun start(host: String) {
         val current = _state.value
         if (current.running || current.candidates.isEmpty()) return
+        // The gate keeps the VPN and proxy services from starting while the native proxy
+        // is in use by this test. It is released in the finally block below.
+        if (!StrategyTestGate.tryAcquire()) return
 
         _state.value = current.copy(
             results = List(current.candidates.size) { null },
@@ -100,6 +104,7 @@ class StrategyTestViewModel : ViewModel() {
                 failed = true
                 _state.update { it.copy(status = StrategyStatus.NoSuccess) }
             } finally {
+                StrategyTestGate.release()
                 _state.update { s ->
                     val status = if (!failed && s.completed < s.candidates.size) {
                         StrategyStatus.Cancelled

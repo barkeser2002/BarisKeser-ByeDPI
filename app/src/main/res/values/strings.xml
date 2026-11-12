@@ -132,7 +132,7 @@
 
     <!-- VPN disclosure -->
     <string name="vpn_disclosure_title">VPN kullanımı</string>
-    <string name="vpn_disclosure_text">Bu uygulama, cihazınızda yerel bir tünel kurmak için Android VpnService özelliğini kullanır.\n\n• Uygulama trafiğiniz (muaf tuttuğunuz uygulamalar hariç) bu cihazda çalışan yerel bir SOCKS5 proxy\'sine (127.0.0.1) yönlendirilir. Proxy, bağlantının ilk paketlerinin gönderilme biçimini değiştirerek DPI (derin paket incelemesi) sistemlerinin bağlantıyı engellemesini zorlaştırmayı amaçlar.\n• DNS sorguları, ayarlarda seçtiğiniz DNS sunucusuna (varsayılan 1.1.1.1) gönderilir.\n• Muaf uygulamaları seçebilmek için cihazınıza yüklü, başlatılabilen uygulamaların listesi yalnızca cihazınızda okunur.\n• Hiçbir trafik, uygulama listesi ya da başka bir veri toplanmaz, cihaz dışında saklanmaz, geliştiriciye gönderilmez ve kimseyle paylaşılmaz.\n• Uzak bir VPN sunucusu kullanılmaz. Uygulama kendi şifrelemesini eklemez; sitelerin TLS gibi kendi şifrelemesi aynen geçerlidir.\n\nVPN bağlantısı yalnızca siz Bağlan dediğinizde başlar, Bağlantıyı Kes dediğinizde durur. Devam etmek için kabul edin ya da reddedin.</string>
+    <string name="vpn_disclosure_text">Bu uygulama, cihazınızda yerel bir tünel kurmak için Android VpnService özelliğini kullanır.\n\n• Cihazınızdaki tüm ağ trafiği (muaf tuttuğunuz uygulamalar ve bu uygulamanın kendisi hariç) bu cihazda çalışan yerel bir SOCKS5 proxy\'sine (127.0.0.1) yönlendirilir. Proxy, bağlantının ilk paketlerinin gönderilme biçimini değiştirerek DPI (derin paket incelemesi) sistemlerinin bağlantıyı engellemesini zorlaştırmayı amaçlar.\n• DNS sorguları, ayarlarda seçtiğiniz DNS sunucusuna (varsayılan 1.1.1.1) gönderilir.\n• Muaf uygulamaları seçebilmek için cihazınıza yüklü, başlatılabilen uygulamaların listesi yalnızca cihazınızda okunur.\n• Hiçbir trafik, uygulama listesi ya da başka bir veri toplanmaz, cihaz dışında saklanmaz, geliştiriciye gönderilmez ve kimseyle paylaşılmaz.\n• Uzak bir VPN sunucusu kullanılmaz. Uygulama kendi şifrelemesini eklemez; sitelerin TLS gibi kendi şifrelemesi aynen geçerlidir.\n\nVPN yalnızca siz Bağlan dediğinizde, hızlı ayar kutucuğundan başlattığınızda ya da açılışta otomatik bağlanmayı açtıysanız telefon açıldığında başlar. Bağlantıyı Kes dediğinizde, bildirimdeki Durdur düğmesine bastığınızda ya da kutucuktan kapattığınızda durur. Devam etmek için kabul edin ya da reddedin.</string>
     <string name="vpn_disclosure_agree">Kabul ediyorum</string>
     <string name="vpn_disclosure_decline">Reddediyorum</string>
     <string name="vpn_disclosure_declined_hint">VPN başlatılmadı. Proxy modunu kullanabilir ya da VPN bildirimini kabul edip tekrar bağlanabilirsiniz.</string>
@@ -145,4 +145,8 @@
 
     <!-- Privacy -->
     <string name="privacy_policy">Gizlilik politikası</string>
+    <string name="no_browser_found">Bu bağlantıyı açabilecek bir uygulama bulunamadı.</string>
+
+    <!-- Start refused while a strategy test uses the native proxy -->
+    <string name="service_blocked_by_test">Strateji testi sürerken bağlantı başlatılamaz. Testin bitmesini ya da durdurulmasını bekleyin.</string>
 </resources>

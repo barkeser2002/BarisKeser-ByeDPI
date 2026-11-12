@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.bariskeser.byedpi.BuildConfig
 import com.bariskeser.byedpi.R
+import com.bariskeser.byedpi.core.StrategyTestGate
 import com.bariskeser.byedpi.data.*
 import com.bariskeser.byedpi.databinding.ActivityMainBinding
 import com.bariskeser.byedpi.fragments.VpnDisclosureDialogFragment
@@ -77,6 +78,9 @@ class MainActivity : AppCompatActivity() {
             launchService()
         }
 
+    /** True while the battery prompt is on screen, so a second STARTED does not open another. */
+    private var batteryPromptShowing = false
+
     private val logsRegister =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             lifecycleScope.launch(Dispatchers.IO) {
@@ -125,7 +129,15 @@ class MainActivity : AppCompatActivity() {
             }
 
             when (val action = intent.action) {
-                STARTED_BROADCAST,
+                STARTED_BROADCAST -> {
+                    updateStatus()
+                    // Only once the service reports it is running, so a failed start
+                    // never shows the battery prompt.
+                    if (appStatus.first == AppStatus.Running) {
+                        maybePromptBatteryOptimization()
+                    }
+                }
+
                 STOPPED_BROADCAST -> updateStatus()
 
                 FAILED_BROADCAST -> {
@@ -322,21 +334,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startTunnel(mode: Mode) {
-        ServiceManager.start(this, mode)
-        maybePromptBatteryOptimization()
+        if (!ServiceManager.start(this, mode)) {
+            if (StrategyTestGate.isActive) {
+                Toast.makeText(this, R.string.service_blocked_by_test, Toast.LENGTH_SHORT).show()
+            }
+            updateStatus()
+        }
+        // The battery prompt is shown from the STARTED broadcast, not here.
     }
 
     /**
-     * Offers, once, to open the system battery-optimization list. Exempting the app
-     * is optional. It only helps on phones whose manufacturer restricts background
-     * apps aggressively, so the prompt is not needed on most devices. If the user
-     * declines we remember that and don't ask again.
+     * Offers, once, to open the battery optimization settings. The prompt is for
+     * phones whose manufacturer restricts background apps aggressively. It is not
+     * needed on most devices. It is shown only after the tunnel is running, and
+     * "Later" or dismissing it is remembered, so it is not asked again.
      */
     private fun maybePromptBatteryOptimization() {
+        if (batteryPromptShowing) return
         val preferences = getPreferences()
         if (preferences.getBoolean("battery_opt_prompted", false)) return
         if (isIgnoringBatteryOptimizations(this)) return
 
+        batteryPromptShowing = true
         AlertDialog.Builder(this)
             .setTitle(R.string.battery_opt_title)
             .setMessage(R.string.battery_opt_message)
@@ -347,6 +366,7 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(R.string.battery_opt_later) { _, _ ->
                 preferences.edit().putBoolean("battery_opt_prompted", true).apply()
             }
+            .setOnDismissListener { batteryPromptShowing = false }
             .show()
     }
 

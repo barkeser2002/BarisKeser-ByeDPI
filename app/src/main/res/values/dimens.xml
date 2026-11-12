@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Height of the scrollable disclosure text inside the dialog. Keeps the buttons on screen. -->
+    <dimen name="vpn_disclosure_height">280dp</dimen>
+</resources>

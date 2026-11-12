@@ -1,19 +1,27 @@
 package com.bariskeser.byedpi.fragments
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import com.bariskeser.byedpi.BuildConfig
 import com.bariskeser.byedpi.R
-import com.bariskeser.byedpi.data.AppStatus
 import com.bariskeser.byedpi.data.Mode
 import com.bariskeser.byedpi.services.ServiceManager
-import com.bariskeser.byedpi.services.appStatus
 import com.bariskeser.byedpi.utility.*
 
 class MainSettingsFragment : PreferenceFragmentCompat() {
     companion object {
+        private val TAG: String = MainSettingsFragment::class.java.simpleName
+
+        private const val SOURCE_URL = "https://github.com/barkeser2002/BarisKeser-ByeDPI"
+        private const val PRIVACY_URL = "https://barkeser2002.github.io/BarisKeser-ByeDPI/"
+
         /**
          * The app is always dark. The [name] argument is ignored and kept only so
          * existing callers compile; this never throws for any input.
@@ -31,16 +39,16 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Declining in review mode withdraws consent, so a running VPN must stop too.
+        // Declining in review mode withdraws consent, so a VPN that is running or still
+        // connecting must stop too. The VPN service serializes the stop behind any start.
         parentFragmentManager.setFragmentResultListener(
             VpnDisclosureDialogFragment.REQUEST_KEY,
             this,
         ) { _, bundle ->
-            if (!bundle.getBoolean(VpnDisclosureDialogFragment.RESULT_ACCEPTED)) {
-                val (status, mode) = appStatus
-                if (status == AppStatus.Running && mode == Mode.VPN) {
-                    ServiceManager.stop(requireContext())
-                }
+            if (!bundle.getBoolean(VpnDisclosureDialogFragment.RESULT_ACCEPTED) &&
+                requireContext().getPreferences().mode() == Mode.VPN
+            ) {
+                ServiceManager.stopVpn(requireContext())
             }
         }
     }
@@ -51,6 +59,16 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         findPreferenceNotNull<Preference>("vpn_disclosure").setOnPreferenceClickListener {
             VpnDisclosureDialogFragment.newInstance(review = true)
                 .show(parentFragmentManager, "vpn_disclosure_review")
+            true
+        }
+
+        // Opened by the app, not by an intent in the XML: a missing browser must not crash.
+        findPreferenceNotNull<Preference>("source_code").setOnPreferenceClickListener {
+            openExternalUrl(SOURCE_URL)
+            true
+        }
+        findPreferenceNotNull<Preference>("privacy_policy").setOnPreferenceClickListener {
+            openExternalUrl(PRIVACY_URL)
             true
         }
 
@@ -98,6 +116,15 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
     override fun onPause() {
         super.onPause()
         sharedPreferences?.unregisterOnSharedPreferenceChangeListener(preferenceListener)
+    }
+
+    private fun openExternalUrl(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (e: ActivityNotFoundException) {
+            Log.e(TAG, "No app can open $url", e)
+            Toast.makeText(requireContext(), R.string.no_browser_found, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun applyCommandLineMode(enable: Boolean) {

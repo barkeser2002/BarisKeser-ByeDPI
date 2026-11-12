@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Landscape phones are short, so the text gets less height. -->
+    <dimen name="vpn_disclosure_height">150dp</dimen>
+</resources>

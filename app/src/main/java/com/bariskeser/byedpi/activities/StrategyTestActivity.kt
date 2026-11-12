@@ -12,6 +12,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -54,6 +57,16 @@ class StrategyTestActivity : AppCompatActivity() {
         binding = ActivityStrategyTestBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // The top is handled by the action bar. The sides, the bottom and the display
+        // cutout are padded here so no control sits under the navigation bar or cutout.
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            view.updatePadding(left = bars.left, right = bars.right, bottom = bars.bottom)
+            insets
+        }
+
         title = getString(R.string.st_title)
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -82,6 +95,15 @@ class StrategyTestActivity : AppCompatActivity() {
         super.onResume()
         // Re-check the VPN/proxy status when returning from another screen.
         render(viewModel.state.value)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // A test in the background would keep the native proxy running with no visible
+        // UI, and would block the VPN. Rotation is kept running, so only a real leave stops it.
+        if (!isChangingConfigurations && viewModel.state.value.running) {
+            viewModel.stop()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean =

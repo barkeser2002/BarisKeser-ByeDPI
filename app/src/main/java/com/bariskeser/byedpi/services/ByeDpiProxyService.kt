@@ -126,6 +126,9 @@ class ByeDpiProxyService : LifecycleService() {
                 } else {
                     updateStatus(ServiceStatus.Disconnected)
                 }
+                // The proxy has exited on its own. Stop the service so the foreground
+                // notification does not stay up for a proxy that is no longer running.
+                stopSelf()
             }
         }
 
@@ -135,17 +138,21 @@ class ByeDpiProxyService : LifecycleService() {
     private suspend fun stopProxy() {
         Log.i(TAG, "Stopping proxy")
 
-        if (status == ServiceStatus.Disconnected) {
-            Log.w(TAG, "Proxy already disconnected")
+        // No job means the proxy was never started or has already exited. Do not touch
+        // the native state then: forceClose would act on a stale descriptor.
+        val job = proxyJob
+        if (job == null || status == ServiceStatus.Disconnected) {
+            Log.w(TAG, "Proxy not running, nothing to stop")
+            proxyJob = null
             return
         }
 
         proxy.stopProxy()
-        val joined = withTimeoutOrNull(3000) { proxyJob?.join() }
+        val joined = withTimeoutOrNull(3000) { job.join() }
         if (joined == null) {
             Log.w(TAG, "join timeout, force closing")
             proxy.forceClose()
-            proxyJob?.join()
+            job.join()
         }
         proxyJob = null
 

@@ -132,7 +132,7 @@
 
     <!-- VPN disclosure -->
     <string name="vpn_disclosure_title">VPN disclosure</string>
-    <string name="vpn_disclosure_text">This app uses Android\'s VpnService to create a tunnel on your device.\n\n• Your app traffic (except the apps you exclude) is sent to a local SOCKS5 proxy at 127.0.0.1 on this device. The proxy changes how the first packets of a connection are sent, which is meant to make it harder for DPI (deep packet inspection) systems to block the connection.\n• DNS queries are sent to the DNS server you choose in settings (default 1.1.1.1).\n• To let you pick excluded apps, the list of launcher apps installed on your device is read only on the device.\n• No traffic, app list or other data is collected, stored off the device, sent to the developer or shared with anyone.\n• No remote VPN server is used. The app does not add its own encryption. Websites keep their own encryption, such as TLS.\n\nThe VPN starts only when you tap Connect and stops when you tap Disconnect. Accept or decline to continue.</string>
+    <string name="vpn_disclosure_text">This app uses Android\'s VpnService to create a tunnel on your device.\n\n• All network traffic on this device (except the apps you exclude and this app itself) is sent to a local SOCKS5 proxy at 127.0.0.1 on this device. The proxy changes how the first packets of a connection are sent, which is meant to make it harder for DPI (deep packet inspection) systems to block the connection.\n• DNS queries are sent to the DNS server you choose in settings (default 1.1.1.1).\n• To let you pick excluded apps, the list of launcher apps installed on your device is read only on the device.\n• No traffic, app list or other data is collected, stored off the device, sent to the developer or shared with anyone.\n• No remote VPN server is used. The app does not add its own encryption. Websites keep their own encryption, such as TLS.\n\nThe VPN starts when you tap Connect, from the Quick Settings tile, or on device boot if you turned on auto-connect. It stops when you tap Disconnect, tap Stop in the notification, or turn it off from the tile. Accept or decline to continue.</string>
     <string name="vpn_disclosure_agree">I agree</string>
     <string name="vpn_disclosure_decline">Decline</string>
     <string name="vpn_disclosure_declined_hint">VPN was not started. Use Proxy mode, or accept the VPN disclosure to connect.</string>
@@ -145,4 +145,8 @@
 
     <!-- Privacy -->
     <string name="privacy_policy">Privacy policy</string>
+    <string name="no_browser_found">No app found to open this link.</string>
+
+    <!-- Start refused while a strategy test uses the native proxy -->
+    <string name="service_blocked_by_test">The connection can\'t start while a strategy test is running. Wait for the test to finish or stop it.</string>
 </resources>

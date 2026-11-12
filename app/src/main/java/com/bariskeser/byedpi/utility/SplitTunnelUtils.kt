@@ -4,6 +4,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.util.Log
+
+private const val TAG = "SplitTunnelUtils"
 
 /** SharedPreferences key holding the set of package names that bypass the VPN. */
 const val SPLIT_EXCLUDED_APPS_KEY = "split_excluded_apps"
@@ -36,12 +39,18 @@ fun loadSplitLaunchableApps(packageManager: PackageManager, ownPackage: String):
         .asSequence()
         .filter { it.activityInfo != null && it.activityInfo.packageName != ownPackage }
         .distinctBy { it.activityInfo.packageName }
-        .map { info ->
-            SplitAppEntry(
-                packageName = info.activityInfo.packageName,
-                label = info.loadLabel(packageManager)?.toString().orEmpty(),
-                icon = info.loadIcon(packageManager),
-            )
+        .mapNotNull { info ->
+            // One broken package must not hide the rest of the list.
+            try {
+                SplitAppEntry(
+                    packageName = info.activityInfo.packageName,
+                    label = info.loadLabel(packageManager)?.toString().orEmpty(),
+                    icon = info.loadIcon(packageManager),
+                )
+            } catch (e: Exception) {
+                Log.w(TAG, "Skipping unreadable package ${info.activityInfo.packageName}", e)
+                null
+            }
         }
         .sortedBy { it.label.lowercase() }
         .toList()
